@@ -1,0 +1,14 @@
+{
+    "Type" : "Identical",
+    "Jobs" : 
+    [
+        {
+            "timestamp" : 0,
+            "workload" : 1
+        },
+        {
+            "timestamp" : 1,
+            "workload" : 1
+        }
+    ]
+}

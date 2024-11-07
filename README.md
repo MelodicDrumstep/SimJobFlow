@@ -1,4 +1,4 @@
-# SlowJobFlow : A Simulated Job Scheduling System
+# SimJobFlow : A Simulated Job Scheduling System
 
 ## Project Overview
 

@@ -1,17 +1,16 @@
 #pragma once
 
 #include <vector>
+#include <memory>
 #include <string>
 
-struct RelatedMachine
+struct IdenticalMachine
 {
     int32_t machineId;
-}
+};
 
-struct RelatedMachineNode
+struct IdenticalMachineNode
 {
-    RelatedMachine() : machineId(-1) {}
-    int64_t processing_speed_;
     int32_t machineId;
     int32_t jobId;
     int64_t remaining_time_;
