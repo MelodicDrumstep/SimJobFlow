@@ -1,0 +1,8 @@
+# ignore log 
+**/*.log
+
+# ignore directory for building
+build/
+
+# ignore directory for third party libraries
+third_party/

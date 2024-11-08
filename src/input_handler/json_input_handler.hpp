@@ -7,11 +7,14 @@
 #include <iostream>
 #include <fstream>
 #include <string_view>
+#include <type_traits>
 #include <nlohmann/json.hpp>
 
 #include "json_parser.hpp"
+#include "normal_job.hpp"
+#include "unrelated_job.hpp"
 
-template <typename JobT>
+template <typename JobT, size_t Num_of_Machines>
 class JsonInputHandler
 {
 public:
@@ -20,7 +23,7 @@ public:
         nlohmann::json job_metadata = parseJsonFile(json_job_path);
         job_type_ = job_metadata["Type"];
         auto & jobs = job_metadata["Jobs"];
-        if constexpr (std::is_same_v<JobT, UnrelatedJob>)
+        if constexpr (std::is_same_v<JobT, UnrelatedJob<Num_of_Machines>>)
         {
             // TODO: to be continued
         }
@@ -31,11 +34,16 @@ public:
                 job_array_.emplace_back(job["timestamp"], job["workload"]);
             }
         }
+        std::sort(job_array_.begin(), job_array_.end());
     }
 
-    bool assert(std::string_view )
+    bool checkValidity(std::string_view job_type)
     {
         // TODO: to be continued
+        if(job_type != job_type_)
+        {
+            throw std::runtime_error("Invalid job type: " + std::string(job_type));
+        }
         return true;
     }
 

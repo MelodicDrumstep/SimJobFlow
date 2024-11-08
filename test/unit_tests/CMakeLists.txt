@@ -1,0 +1,2 @@
+# Add input_handler_test subdirectory
+add_subdirectory(input_handler_test)

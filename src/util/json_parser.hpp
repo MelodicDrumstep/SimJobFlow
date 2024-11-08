@@ -14,7 +14,7 @@ nlohmann::json parseJsonFile(std::string_view json_config_path)
     std::ifstream file(json_config_path.data());
     if(!file.is_open()) 
     {
-        throw std::runtime_error("Failed to open file: " + std::string(config_path));
+        throw std::runtime_error("Failed to open file: " + std::string(json_config_path));
     }
 
     nlohmann::json config;

@@ -2,5 +2,5 @@
 
 enum class Model
 {
-    Indentical, Related, Unrelated
+    Identical, Related, Unrelated
 };
