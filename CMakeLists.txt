@@ -21,6 +21,7 @@ include_directories(${CMAKE_SOURCE_DIR}/src/model)
 include_directories(${CMAKE_SOURCE_DIR}/src/output_handler)
 include_directories(${CMAKE_SOURCE_DIR}/src/simjobflow)
 include_directories(${CMAKE_SOURCE_DIR}/src/util)
+include_directories(${CMAKE_SOURCE_DIR}/src/util/exception)
 
 # Add subdirectoriesa
 add_subdirectory(test)

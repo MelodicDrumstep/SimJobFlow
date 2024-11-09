@@ -3,18 +3,30 @@
 #include <vector>
 #include <array>
 
-template <size_t Num_of_Machines>
+#include <string>
+
 struct UnrelatedJob
 {
     int64_t timestamp_;
-    size_t index_;
-    std::array<int64_t, Num_of_Machines> processing_speeds_;
+    std::vector<int64_t> processing_time_;
 
-    UnrelatedJob(int64_t timestamp, size_t index, std::array<int64_t, Num_of_Machines> processing_speeds)
-     : timestamp_(timestamp), index_(index), processing_speeds_(processing_speeds) {}
+    UnrelatedJob(int64_t timestamp, std::vector<int64_t> && processing_speeds)
+     : timestamp_(timestamp), processing_time_(std::move(processing_speeds)) {}
+
+    UnrelatedJob(const UnrelatedJob & other) = default;
 
     bool operator<(const UnrelatedJob & other) const
     {
         return (timestamp_ < other.timestamp_);
+    }
+
+    std::string toString() const
+    {
+        std::string result = "timestamp = " + std::to_string(timestamp_) + "\nprocessing_time = \n";
+        for (const auto & speed : processing_time_)
+        {
+            result += " " + std::to_string(speed);
+        }
+        return result;
     }
 };

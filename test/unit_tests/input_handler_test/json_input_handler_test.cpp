@@ -4,13 +4,16 @@
 
 #include "json_input_handler.hpp"
 
+// #define DEBUG_JSON_INPUT_TEST
 
-TEST(JsonInputHandlerTest, ConstructorAndGetJobs) 
+TEST(JsonInputHandlerTest, ConstructorAndGetJobs1) 
 {
-    JsonInputHandler<NormalJob, 2> handler("../../../../assets/json/job/sample_job.json");
+    JsonInputHandler<NormalJob> handler("../../../../assets/json/job/normal_job1.json");
 
     // Test assert method
-    EXPECT_TRUE(handler.checkValidity("Normal"));
+    EXPECT_TRUE(handler.checkValidity("Normal", 2));
+    EXPECT_THROW(handler.checkValidity("Normal", 3), NumberOfMachinesMismatch);
+    EXPECT_THROW(handler.checkValidity("Unrelated", 2), InvalidJobType);
 
     // Test getJobs method
     auto jobs = handler.getJobs(0);
@@ -29,10 +32,89 @@ TEST(JsonInputHandlerTest, ConstructorAndGetJobs)
     EXPECT_TRUE(handler.done());
 }
 
-TEST(JsonInputHandlerTest, InvalidJobType) 
+TEST(JsonInputHandlerTest, ConstructorAndGetJobs2) 
 {
-    JsonInputHandler<NormalJob, 2> handler("../../../../assets/json/job/sample_job.json");
+    JsonInputHandler<NormalJob> handler("../../../../assets/json/job/normal_job2.json");
 
-    // Test assert method with invalid job type
-    EXPECT_THROW(handler.checkValidity("InvalidType"), std::runtime_error);
+    #ifdef DEBUG_JSON_INPUT_TEST
+        auto job_array = handler.getJobArray();
+        for(auto & job : job_array)
+        {
+            std::cout << job.toString() << std::endl;
+        }
+    #endif
+
+    // Test assert method
+    EXPECT_TRUE(handler.checkValidity("Normal", 3));
+
+    // Test getJobs method
+    auto jobs = handler.getJobs(0);
+    ASSERT_TRUE(jobs.has_value());
+    EXPECT_EQ(jobs->size(), 1);
+    EXPECT_EQ(jobs->at(0).timestamp_, 0);
+    EXPECT_EQ(jobs->at(0).workload_, 1);
+    EXPECT_FALSE(handler.done());
+
+    jobs = handler.getJobs(1);
+    ASSERT_TRUE(jobs.has_value());
+    EXPECT_EQ(jobs->size(), 1);
+    EXPECT_EQ(jobs->at(0).timestamp_, 1);
+    EXPECT_EQ(jobs->at(0).workload_, 1);
+    EXPECT_FALSE(handler.done());
+
+    jobs = handler.getJobs(3);
+    ASSERT_TRUE(jobs.has_value());
+    EXPECT_EQ(jobs->size(), 3);
+    EXPECT_EQ(jobs->at(0).timestamp_, 2);
+    EXPECT_EQ(jobs->at(0).workload_, 3);
+    EXPECT_EQ(jobs->at(1).timestamp_, 2);
+    EXPECT_EQ(jobs->at(1).workload_, 5);
+    EXPECT_EQ(jobs->at(2).timestamp_, 3);
+    EXPECT_EQ(jobs->at(2).workload_, 3);
+
+    // Test done method
+    EXPECT_TRUE(handler.done());
+}
+
+TEST(JsonInputHandlerTest, UnrelatedConstructorAndGetJobs1) 
+{
+    JsonInputHandler<UnrelatedJob> handler("../../../../assets/json/job/unrelated_job1.json");
+
+    #ifdef DEBUG_JSON_INPUT_TEST
+        auto job_array = handler.getJobArray();
+        for(auto & job : job_array)
+        {
+            std::cout << job.toString() << std::endl;
+        }
+    #endif
+
+    // Test assert method
+    EXPECT_THROW(handler.checkValidity("Normal", 2), InvalidJobType);
+    EXPECT_TRUE(handler.checkValidity("Unrelated", 2));
+
+    // Test getJobs method
+    auto jobs = handler.getJobs(0);
+    ASSERT_TRUE(jobs.has_value());
+    EXPECT_EQ(jobs->size(), 1);
+    EXPECT_EQ(jobs->at(0).timestamp_, 0);
+    EXPECT_EQ(jobs->at(0).processing_time_.size(), 2);
+    EXPECT_EQ(jobs->at(0).processing_time_.at(0), 3);
+    EXPECT_EQ(jobs->at(0).processing_time_.at(1), 2);
+    EXPECT_FALSE(handler.done());
+
+    jobs = handler.getJobs(3);
+    ASSERT_TRUE(jobs.has_value());
+    EXPECT_EQ(jobs->size(), 2);
+    EXPECT_EQ(jobs->at(0).timestamp_, 1);
+    EXPECT_EQ(jobs->at(0).processing_time_.size(), 2);
+    EXPECT_EQ(jobs->at(0).processing_time_.at(0), 5);
+    EXPECT_EQ(jobs->at(0).processing_time_.at(1), 4);
+
+    EXPECT_EQ(jobs->at(1).timestamp_, 2);
+    EXPECT_EQ(jobs->at(1).processing_time_.size(), 2);
+    EXPECT_EQ(jobs->at(1).processing_time_.at(0), 1);
+    EXPECT_EQ(jobs->at(1).processing_time_.at(1), 2);
+
+    // Test done method
+    EXPECT_TRUE(handler.done());
 }

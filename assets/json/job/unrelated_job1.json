@@ -1,0 +1,31 @@
+{
+    "Type" : "Unrelated",
+    "Num_of_Machines" : 2,
+    "Jobs" : 
+    [
+        {
+            "timestamp" : 2,
+            "processing_time" : 
+            [
+                1,
+                2
+            ]
+        },
+        {
+            "timestamp" : 0,
+            "processing_time" : 
+            [
+                3,
+                2
+            ]
+        },
+        {
+            "timestamp" : 1,
+            "processing_time" : 
+            [
+                5,
+                4
+            ]
+        }
+    ]
+}

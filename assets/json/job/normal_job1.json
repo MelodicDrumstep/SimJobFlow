@@ -1,5 +1,6 @@
 {
     "Type" : "Normal",
+    "Num_of_Machines" : 2,
     "Jobs" : 
     [
         {
