@@ -7,6 +7,8 @@
 
 using namespace SJF;
 
+using json = nlohmann::json;
+
 #define DEBUG_GREEDY_SCHED_TEST
 
 TEST(GreedySchedulerTest, BasicOperations) 
@@ -18,7 +20,8 @@ TEST(GreedySchedulerTest, BasicOperations)
         machines[i].machineId_ = i;
     }
 
-    GreedyScheduler<Model::Identical> sched;
+    json config;
+    GreedyScheduler<Model::Identical> sched(config);
     sched.initialize(num_of_machines);
 
     std::vector<NormalJob> jobs_for_this_turn;

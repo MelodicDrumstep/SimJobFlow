@@ -19,6 +19,8 @@
 namespace SJF
 {
 
+#define DEBUG_SJF
+
 using json = nlohmann::json;
 
 template <Model model, typename SchedulerT, InputHandler<model> InputHandlerT, OutputHandler<model> OutputHandlerT, Timer<model> TimerT>
@@ -39,9 +41,19 @@ public:
         output_handler_(std::move(output_handler)),
         timer_(std::move(timer))
     {
-        static_assert(/*Some traits to check the model and other staffs*/);
+        // DEBUGING
+        #ifdef DEBUG_SJF
+            std::cout << "Inside SJF::Constructor, num_of_machines is " << num_of_machines_ << std::endl;
+            std::cout << "&(*input_handler_) is " << &(*input_handler_) << std::endl;
+            std::cout << "&(*scheduler_) is " << &(*scheduler_) << std::endl;
+            auto & machine_free_list = scheduler_ -> getMachineFreeList();
+            std::cout << "&machine_free_list is " << &machine_free_list << std::endl;
+            std::cout << "The initial size of the machine free list of the scheduler is " << machine_free_list.size() << "\n\n";
+        #endif
+        // DEBUGING
+
         input_handler_ -> checkValidity(num_of_machines_);
-        scheduler -> initialize(num_of_machines_);
+        scheduler_ -> initialize(num_of_machines_);
         initializeMachines(config);
     }
 
@@ -58,7 +70,7 @@ public:
                 jobs_.insert(jobs_.end(), jobs_for_this_turn -> begin(), jobs_for_this_turn -> end());
             }
             output_handler_ -> output(machines_, jobs_, timestamp, schedule_steps);
-            scheduler -> maintainMachineState(machines_, timer_ -> tick(machines_));
+            scheduler_ -> maintainMachineState(machines_, timer_ -> tick(machines_));
         }
     }
 
@@ -76,7 +88,7 @@ private:
         std::ifstream file(json_config_path.data());
         if(!file.is_open()) 
         {
-            throw std::runtime_error("Failed to open file: " + std::string(config_path));
+            throw std::runtime_error("Failed to open file: " + std::string(json_config_path));
         }
 
         json config;
@@ -88,7 +100,6 @@ private:
     void initializeMachines(const json & config)
     {
         machines_.reserve(num_of_machines_);
-        machine_free_list.reserve(num_of_machines_);
         if constexpr (model == Model::Related)
         {
             std::vector<int64_t> processing_speed = config["Processing_Speed"];
@@ -107,10 +118,6 @@ private:
             {
                 machines_.emplace_back(i);
             }
-        }
-        for(size_t i = 0; i < num_of_machines_; i++)
-        {
-            machine_free_list_.push_back(i);
         }
     }
 };

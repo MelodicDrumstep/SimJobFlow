@@ -18,15 +18,17 @@
 namespace SJF
 {
 
+using json = nlohmann::json;
+
 template <Model model>
 class JsonInputHandler
 {
 public:
 using JobT = typename ModelTraits<model>::JobT;
 
-    JsonInputHandler(std::string_view json_job_path)
+    JsonInputHandler(const json & config, std::string_view json_job_path)
     {
-        nlohmann::json job_metadata = parseJsonFile(json_job_path);
+        json job_metadata = parseJsonFile(json_job_path);
         job_type_ = job_metadata["Type"];
         auto & jobs = job_metadata["Jobs"];
         num_of_machines_ = job_metadata["Num_of_Machines"];

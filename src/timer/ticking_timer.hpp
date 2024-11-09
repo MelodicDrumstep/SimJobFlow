@@ -3,7 +3,6 @@
 #include <nlohmann/json.hpp>
 #include "timer_trait.hpp"
 #include "model_trait.hpp"
-#include 
 
 namespace SJF
 {
@@ -11,12 +10,12 @@ namespace SJF
 using json = nlohmann::json;
 
 template <Model model>
-class TikTokTimer
+class TickingTimer
 {
 using MachineT = typename ModelTraits<model>::MachineT;
 
 public:
-    TikTokTimer(const json & config) {}
+    TickingTimer(const json & config) {}
 
     int64_t tick(const std::vector<MachineT> & machines) 
     { 
@@ -24,7 +23,7 @@ public:
         return 1;
     }
 
-    int64_t timestamp() 
+    int64_t timestamp() const
     { 
         return timestamp_; 
     }

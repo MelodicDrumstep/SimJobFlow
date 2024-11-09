@@ -4,6 +4,8 @@
 #include <type_traits>
 #include <cmath>
 #include <queue>
+#include <nlohmann/json.hpp>
+#include <iostream>
 
 #include "model_trait.hpp"
 #include "schedule_step.hpp"
@@ -13,11 +15,26 @@
 namespace SJF
 {
 
+#define DEBUG_SCHED_ID
+
+using json = nlohmann::json;
+
 class GreedySchedulerIdentical
 {
 using JobHeap = std::priority_queue<NormalJob, std::vector<NormalJob>, NormalJobWorkloadCmp>;
 
 public:
+    GreedySchedulerIdentical(const json & config) 
+    {
+        // DEBUGING
+        #ifdef DEBUG_SCHED_ID
+            std::cout << "Inside Constructor of GreedySchedulerIdentical\n";
+            std::cout << "&machine_free_list_ is " << &machine_free_list_ << std::endl;
+            std::cout << "The size of machine_free_list is " << machine_free_list_.size() << std::endl;
+        #endif
+        // DEBUGING
+    }
+
     void initialize(int64_t num_of_machines)
     {
         machine_free_list_.reserve(num_of_machines);

@@ -9,9 +9,12 @@ using namespace SJF;
 
 // #define DEBUG_JSON_INPUT_TEST
 
+using json = nlohmann::json;
+json config;
+
 TEST(JsonInputHandlerTest, ConstructorAndGetJobs1) 
 {
-    JsonInputHandler<Model::Identical> handler("../../../../assets/json/job/normal_job1.json");
+    JsonInputHandler<Model::Identical> handler(config, "../../../../assets/json/job/normal_job1.json");
 
     // Test assert method
     EXPECT_TRUE(handler.checkValidity(2));
@@ -36,7 +39,7 @@ TEST(JsonInputHandlerTest, ConstructorAndGetJobs1)
 
 TEST(JsonInputHandlerTest, ConstructorAndGetJobs2) 
 {
-    JsonInputHandler<Model::Related> handler("../../../../assets/json/job/normal_job2.json");
+    JsonInputHandler<Model::Related> handler(config, "../../../../assets/json/job/normal_job2.json");
 
     #ifdef DEBUG_JSON_INPUT_TEST
         auto job_array = handler.getJobArray();
@@ -80,7 +83,7 @@ TEST(JsonInputHandlerTest, ConstructorAndGetJobs2)
 
 TEST(JsonInputHandlerTest, UnrelatedConstructorAndGetJobs1) 
 {
-    JsonInputHandler<Model::Unrelated> handler("../../../../assets/json/job/unrelated_job1.json");
+    JsonInputHandler<Model::Unrelated> handler(config, "../../../../assets/json/job/unrelated_job1.json");
 
     #ifdef DEBUG_JSON_INPUT_TEST
         auto job_array = handler.getJobArray();

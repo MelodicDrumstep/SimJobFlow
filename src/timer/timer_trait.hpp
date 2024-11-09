@@ -11,8 +11,8 @@ namespace SJF
 template <typename TimerT, Model model>
 concept Timer = requires(TimerT timer, const std::vector<typename ModelTraits<model>::MachineT> & machines) 
 {
-    { timer.tick(machines, machine_free_list) } -> std::same_as<int64_t>;
-    { timer.timestamp() } -> std::same_as<size_t>;
+    { timer.tick(machines) } -> std::same_as<int64_t>;
+    { std::as_const(timer).timestamp() } -> std::same_as<int64_t>;
 };
 
 }

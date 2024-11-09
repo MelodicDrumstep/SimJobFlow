@@ -3,11 +3,14 @@
 #include <vector>
 #include <fstream>
 #include <string_view>
+#include <nlohmann/json.hpp>
 
 #include "model_trait.hpp"
 
 namespace SJF
 {
+
+using json = nlohmann::json;
 
 template <Model model>
 class FileOutputHandler
@@ -16,7 +19,7 @@ using JobT = typename ModelTraits<model>::JobT;
 using MachineT = typename ModelTraits<model>::MachineT;
 
 public:
-    FileOutputHandler(std::string_view output_path)
+    FileOutputHandler(const json & config, std::string_view output_path)
     {
         output_file_.open(output_path.data(), std::ios::out | std::ios::trunc);
         if(!output_file_.is_open())
