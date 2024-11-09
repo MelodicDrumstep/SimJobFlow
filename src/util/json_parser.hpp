@@ -9,6 +9,9 @@
 #include <string_view>
 #include <nlohmann/json.hpp>
 
+namespace SJF
+{
+
 nlohmann::json parseJsonFile(std::string_view json_config_path) 
 {
     std::ifstream file(json_config_path.data());
@@ -21,4 +24,5 @@ nlohmann::json parseJsonFile(std::string_view json_config_path)
     file >> config;
     file.close();
     return config;
+}
 }

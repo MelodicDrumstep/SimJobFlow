@@ -4,6 +4,8 @@
 #include <string>
 #include <string_view>
 
+namespace SJF
+{
 class InvalidJobType : public std::exception 
 {
 public:
@@ -35,3 +37,5 @@ private:
     size_t size_of_processing_time_;
     size_t expected_size_;
 };
+
+}

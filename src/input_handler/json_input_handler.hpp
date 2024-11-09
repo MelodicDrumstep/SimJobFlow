@@ -11,14 +11,19 @@
 #include <nlohmann/json.hpp>
 
 #include "json_parser.hpp"
-#include "normal_job.hpp"
-#include "unrelated_job.hpp"
+#include "job.hpp"
 #include "exceptions_in_one_header.hpp"
+#include "model_trait.hpp"
 
-template <typename JobT>
+namespace SJF
+{
+
+template <Model model>
 class JsonInputHandler
 {
 public:
+using JobT = typename ModelTraits<model>::JobT;
+
     JsonInputHandler(std::string_view json_job_path)
     {
         nlohmann::json job_metadata = parseJsonFile(json_job_path);
@@ -27,6 +32,10 @@ public:
         num_of_machines_ = job_metadata["Num_of_Machines"];
         if constexpr (std::is_same_v<JobT, UnrelatedJob>)
         {
+            if(job_type_ != "Unrelated")
+            {
+                throw InvalidJobType(job_type_);
+            }
             for(auto & job : jobs)
             {
                 std::vector<int64_t> processing_speeds = job["processing_time"];
@@ -39,20 +48,24 @@ public:
         }
         else
         {
+            if(job_type_ != "Normal")
+            {
+                throw InvalidJobType(job_type_);
+            }
             for(auto & job : jobs)
             {
                 job_array_.emplace_back(job["timestamp"], job["workload"]);
             }
         }
         std::sort(job_array_.begin(), job_array_.end());
+        for(size_t i = 0; i < job_array_.size(); i++)
+        {
+            job_array_[i].id_ = i;
+        }
     }
 
-    bool checkValidity(std::string_view job_type, int64_t num_of_machines)
+    bool checkValidity(int64_t num_of_machines)
     {
-        if(job_type != job_type_)
-        {
-            throw InvalidJobType(job_type);
-        }
         if(num_of_machines != num_of_machines_)
         {
             throw NumberOfMachinesMismatch(num_of_machines, num_of_machines_);
@@ -94,3 +107,5 @@ private:
     std::vector<JobT> job_array_;
     size_t tail_index_ = 0;
 };
+
+}

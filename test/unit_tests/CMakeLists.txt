@@ -1,2 +1,3 @@
 # Add input_handler_test subdirectory
 add_subdirectory(input_handler_test)
+add_subdirectory(scheduler_test)

@@ -4,6 +4,9 @@
 #include <string>
 #include <string_view>
 
+namespace SJF
+{
+
 class NumberOfMachinesMismatch : public std::exception 
 {
 public:
@@ -19,3 +22,5 @@ private:
     size_t num_of_machines_;
     size_t expected_num_of_machines_;
 };
+
+}

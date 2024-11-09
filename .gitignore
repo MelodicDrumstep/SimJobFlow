@@ -6,3 +6,6 @@ build/
 
 # ignore directory for third party libraries
 third_party/
+
+# ignore vscode configuration directory
+.vscode/

@@ -2,7 +2,7 @@
 
 #include "simjobflow.hpp"
 #include "greedy_scheduler.hpp"
-#include "tik_tok_timer.hpp"
+#include "ticking_timer.hpp"
 #include "json_input_handler.hpp"
 #include "file_output_handler.hpp"
 #include "model.hpp"

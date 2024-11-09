@@ -3,17 +3,19 @@
 #include <nlohmann/json.hpp>
 
 #include "json_input_handler.hpp"
+#include "model.hpp"
+
+using namespace SJF;
 
 // #define DEBUG_JSON_INPUT_TEST
 
 TEST(JsonInputHandlerTest, ConstructorAndGetJobs1) 
 {
-    JsonInputHandler<NormalJob> handler("../../../../assets/json/job/normal_job1.json");
+    JsonInputHandler<Model::Identical> handler("../../../../assets/json/job/normal_job1.json");
 
     // Test assert method
-    EXPECT_TRUE(handler.checkValidity("Normal", 2));
-    EXPECT_THROW(handler.checkValidity("Normal", 3), NumberOfMachinesMismatch);
-    EXPECT_THROW(handler.checkValidity("Unrelated", 2), InvalidJobType);
+    EXPECT_TRUE(handler.checkValidity(2));
+    EXPECT_THROW(handler.checkValidity(3), NumberOfMachinesMismatch);
 
     // Test getJobs method
     auto jobs = handler.getJobs(0);
@@ -34,7 +36,7 @@ TEST(JsonInputHandlerTest, ConstructorAndGetJobs1)
 
 TEST(JsonInputHandlerTest, ConstructorAndGetJobs2) 
 {
-    JsonInputHandler<NormalJob> handler("../../../../assets/json/job/normal_job2.json");
+    JsonInputHandler<Model::Related> handler("../../../../assets/json/job/normal_job2.json");
 
     #ifdef DEBUG_JSON_INPUT_TEST
         auto job_array = handler.getJobArray();
@@ -45,7 +47,7 @@ TEST(JsonInputHandlerTest, ConstructorAndGetJobs2)
     #endif
 
     // Test assert method
-    EXPECT_TRUE(handler.checkValidity("Normal", 3));
+    EXPECT_TRUE(handler.checkValidity(3));
 
     // Test getJobs method
     auto jobs = handler.getJobs(0);
@@ -78,7 +80,7 @@ TEST(JsonInputHandlerTest, ConstructorAndGetJobs2)
 
 TEST(JsonInputHandlerTest, UnrelatedConstructorAndGetJobs1) 
 {
-    JsonInputHandler<UnrelatedJob> handler("../../../../assets/json/job/unrelated_job1.json");
+    JsonInputHandler<Model::Unrelated> handler("../../../../assets/json/job/unrelated_job1.json");
 
     #ifdef DEBUG_JSON_INPUT_TEST
         auto job_array = handler.getJobArray();
@@ -89,8 +91,7 @@ TEST(JsonInputHandlerTest, UnrelatedConstructorAndGetJobs1)
     #endif
 
     // Test assert method
-    EXPECT_THROW(handler.checkValidity("Normal", 2), InvalidJobType);
-    EXPECT_TRUE(handler.checkValidity("Unrelated", 2));
+    EXPECT_TRUE(handler.checkValidity(2));
 
     // Test getJobs method
     auto jobs = handler.getJobs(0);
