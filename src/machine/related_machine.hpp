@@ -8,12 +8,15 @@
 namespace SJF
 {
 
+/**
+ * @brief Machine type of Related model. 
+ */
 struct RelatedMachine
 {
     int64_t machineId_ = Invalid_Machine_Id;
-    int64_t processing_speed_ = Invalid_Processing_Speed;
-    int64_t job_id_ = Invalid_Job_Id;
-    int64_t remaining_time_ = Invalid_Remaining_Time;
+    int64_t processing_speed_ = Invalid_Processing_Speed;   // the processing speed of this machine
+    int64_t job_id_ = Invalid_Job_Id;                       // the jobId of the current running job on this machine
+    int64_t remaining_time_ = Invalid_Remaining_Time;       // the remaining processing time of the current running job 
 
     RelatedMachine() = default;
 

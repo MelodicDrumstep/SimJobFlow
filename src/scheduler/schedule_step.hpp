@@ -6,6 +6,9 @@
 namespace SJF
 {
 
+/**
+ * @brief A schedule step, containing the timestamp, and the id of the "machine, job" pair.
+ */
 struct ScheduleStep
 {
     int64_t timestamp_;

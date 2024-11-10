@@ -46,7 +46,7 @@ TEST(GreedySchedulerTest, BasicOperations)
     EXPECT_EQ(machines[0].remaining_time_, 4);
     EXPECT_EQ(machines[1].remaining_time_, 4);
 
-    sched.maintainMachineState(machines, 1);
+    sched.updateMachineState(machines, 1);
 
     EXPECT_EQ(machines[0].remaining_time_, 3);
     EXPECT_EQ(machines[1].remaining_time_, 3);
@@ -60,7 +60,7 @@ TEST(GreedySchedulerTest, BasicOperations)
 
     EXPECT_EQ(schedule_steps2.size(), 0);
 
-    sched.maintainMachineState(machines, 3);
+    sched.updateMachineState(machines, 3);
     EXPECT_EQ(machines[0].remaining_time_, Invalid_Remaining_Time);
     EXPECT_EQ(machines[1].remaining_time_, Invalid_Remaining_Time);    
 

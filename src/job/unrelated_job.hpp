@@ -8,11 +8,16 @@
 namespace SJF
 {
 
+/**
+ * @brief Unrelated job, used in Unrelated model.
+ */
 struct UnrelatedJob
 {
-    int64_t timestamp_;
+    int64_t timestamp_;         // the timestamp when this job enters
     std::vector<int64_t> processing_time_;
-    int64_t id_;
+        // In unrelated model, each "machine, job" pair has different processing time
+        // And it's given in the job struct
+    int64_t id_;                // jobId, sorted by timestamp
 
     UnrelatedJob(int64_t timestamp, std::vector<int64_t> && processing_speeds)
      : timestamp_(timestamp), processing_time_(std::move(processing_speeds)) {}

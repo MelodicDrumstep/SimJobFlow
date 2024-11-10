@@ -8,6 +8,9 @@
 namespace SJF
 {
 
+/**
+ * @brief A concept constraining the timer type.
+ */
 template <typename TimerT, Model model>
 concept Timer = requires(TimerT timer, const std::vector<typename ModelTraits<model>::MachineT> & machines) 
 {

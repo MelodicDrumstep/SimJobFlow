@@ -8,11 +8,14 @@
 namespace SJF
 {
 
+/**
+ * @brief Machine type of Unrelated model. 
+ */
 struct UnrelatedMachine
 {
     int32_t machineId_ = Invalid_Machine_Id;
-    int32_t job_id_ = Invalid_Job_Id;
-    int64_t remaining_time_ = Invalid_Remaining_Time;
+    int32_t job_id_ = Invalid_Job_Id;                   // the jobId of the current running job on this machine
+    int64_t remaining_time_ = Invalid_Remaining_Time;   // the remaining processing time of the current running job 
 
     UnrelatedMachine() = default;
 

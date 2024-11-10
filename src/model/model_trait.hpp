@@ -9,6 +9,9 @@
 namespace SJF
 {
 
+/**
+ * @brief The traits of the model, mapping model type to job type and machine type.
+ */
 template <Model model>
 struct ModelTraits
 {

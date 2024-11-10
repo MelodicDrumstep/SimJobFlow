@@ -12,6 +12,9 @@
 namespace SJF
 {
 
+/**
+ * @brief Parse the json file and return a json object
+ */
 nlohmann::json parseJsonFile(std::string_view json_config_path) 
 {
     std::ifstream file(json_config_path.data());

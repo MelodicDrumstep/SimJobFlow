@@ -8,6 +8,9 @@
 namespace SJF
 {
 
+/**
+ * @brief A concept constraining the output handler type.
+ */
 template <typename OutputHandlerT, Model model>
 concept OutputHandler = requires(OutputHandlerT output_handler,
                                  std::vector<typename ModelTraits<model>::MachineT> machines,

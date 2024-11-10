@@ -9,6 +9,9 @@ namespace SJF
 
 using json = nlohmann::json;
 
+/**
+ * @brief The ticking timer. The elapsing time of each turn is just 1.
+ */
 template <Model model>
 class TickingTimer
 {

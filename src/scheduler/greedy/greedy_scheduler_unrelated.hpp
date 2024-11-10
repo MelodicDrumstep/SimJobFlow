@@ -29,7 +29,7 @@ public:
         // TODO: implement it
     }
 
-    void maintainMachineState(std::vector<UnrelatedMachine> & machines, int64_t elapsing_time)
+    void updateMachineState(std::vector<UnrelatedMachine> & machines, int64_t elapsing_time)
     {
         // TODO: implement it
     }

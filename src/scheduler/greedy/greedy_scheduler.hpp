@@ -11,6 +11,12 @@
 namespace SJF
 {
 
+/**
+ * @brief The scheduler using greedy strategy.
+ * It will choose different back type corresponding to different model type.
+ * 
+ * @tparam model Identical / Related / Unrelated
+ */
 template <Model model>
 using GreedyScheduler = std::conditional_t<
     model == Model::Identical,

@@ -5,11 +5,17 @@
 namespace SJF
 {
 
+/**
+ * @brief Normal job, used in Identical model and Related model. 
+ */
 struct NormalJob
 {
-    int64_t timestamp_;
-    int64_t workload_;
-    int64_t id_;
+    int64_t timestamp_; // the timestamp when this job enters
+    int64_t workload_;  // the workload of this job. In Identical model, all machines have processing speed as 1
+                        // therefore the workload is the same as the processing time of this job
+                        // In Related model, different machines have different processing speed
+                        // therefore the processing time is "workload / processing speed of the machine"
+    int64_t id_;        // jobId, sorted by timestamp
 
     NormalJob(int64_t timestamp, int64_t workload)
      : timestamp_(timestamp), workload_(workload) {}
@@ -33,6 +39,10 @@ struct NormalJob
     }
 };
 
+/**
+ * @brief A compare function class used for creating the job heap.
+ *      It compares two job just based on the workload.
+ */
 struct NormalJobWorkloadCmp
 {
     bool operator()(const NormalJob & job1, const NormalJob & job2) const

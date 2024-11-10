@@ -9,6 +9,9 @@
 namespace SJF
 {
 
+/**
+ * @brief A concept constraining the input handler type.
+ */
 template <typename InputHandlerT, Model model>
 concept InputHandler = requires(InputHandlerT input_handler, int64_t timestamp, int64_t num_of_machines) 
 {
