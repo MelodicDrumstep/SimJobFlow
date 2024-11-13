@@ -28,7 +28,7 @@ using json = nlohmann::json;
  * @brief The interface for user of this simulated job scheduling system.
  *          usage : configure all parameters, construct one instance of SimJobFlow, and call "start" function.
  * 
- * @tparam model            An instance of enum class Model. There are 3 models supported : 
+ * @tparam machine_model            An instance of enum class Machine_Model. There are 3 models supported : 
  *          1. Identical     2. Related      3. Unrelated.   For there specific definitions, @see README.md.
  * @tparam SchedulerT       Scheduler type. It's reponsible for scheduling jobs to free machines, 
  *          and update the machine state for each turn.
@@ -36,14 +36,14 @@ using json = nlohmann::json;
  * @tparam OutputHandlerT   Output handler type. It's reponsible for outputing the scheduler steps.
  * @tparam TimerT           Timer type. It's reponsible for deciding the timestamp for the next turn, i.e. the elapsing time for each turn.
  */
-template <Model model, Scheduler<model> SchedulerT, InputHandler<model> InputHandlerT, OutputHandler<model> OutputHandlerT, Timer<model> TimerT>
+template <Machine_Model machine_model, Scheduler<machine_model> SchedulerT, InputHandler<machine_model> InputHandlerT, OutputHandler<machine_model> OutputHandlerT, Timer<machine_model> TimerT>
 class SimJobFlow 
 {
 /**
- * ModelTraits, which located at "src/model/model_trait.hpp, contains the job type and machine type for this model"
+ * MachineModelTraits, which located at "src/machine_model/model_trait.hpp, contains the job type and machine type for this machine_model"
  */
-using JobT = typename ModelTraits<model>::JobT;
-using MachineT = typename ModelTraits<model>::MachineT;
+using JobT = typename MachineModelTraits<machine_model>::JobT;
+using MachineT = typename MachineModelTraits<machine_model>::MachineT;
 
 public:
     /**
@@ -116,9 +116,9 @@ private:
     void initializeMachines(const json & config)
     {
         machines_.reserve(num_of_machines_);
-        if constexpr (model == Model::Related)
+        if constexpr (machine_model == Machine_Model::Related)
         {
-            // If the model is Related, there's a processing speed field for the machine type
+            // If the machine_model is Related, there's a processing speed field for the machine type
             // configure it using the field in json object
             std::vector<int64_t> processing_speed = config["Processing_Speed"];
             if(processing_speed.size() != num_of_machines_)

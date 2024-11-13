@@ -12,11 +12,11 @@ namespace SJF
 /**
  * @brief A concept constraining the input handler type.
  */
-template <typename InputHandlerT, Model model>
+template <typename InputHandlerT, Machine_Model machine_model>
 concept InputHandler = requires(InputHandlerT input_handler, int64_t timestamp, int64_t num_of_machines) 
 {
     { input_handler.checkValidity(num_of_machines) } -> std::same_as<bool>;
-    { input_handler.getJobs(timestamp) } -> std::same_as<std::optional<std::vector<typename ModelTraits<model>::JobT>>>;
+    { input_handler.getJobs(timestamp) } -> std::same_as<std::optional<std::vector<typename MachineModelTraits<machine_model>::JobT>>>;
     { input_handler.done() } -> std::same_as<bool>;
 };
 

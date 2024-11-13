@@ -13,10 +13,10 @@ namespace SJF
 /**
  * @brief A concept constraining the scheduler type.
  */
-template <typename SchedulerT, Model model>
+template <typename SchedulerT, Machine_Model machine_model>
 concept Scheduler = requires(SchedulerT scheduler, 
-                             const std::vector<typename ModelTraits<model>::JobT> & jobs_for_this_turn,
-                             std::vector<typename ModelTraits<model>::MachineT> & machines,
+                             const std::vector<typename MachineModelTraits<machine_model>::JobT> & jobs_for_this_turn,
+                             std::vector<typename MachineModelTraits<machine_model>::MachineT> & machines,
                              int64_t timestamp,
                              int64_t num_of_machines,
                              int64_t elapsing_time)

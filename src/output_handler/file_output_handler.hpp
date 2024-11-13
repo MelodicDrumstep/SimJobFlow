@@ -16,13 +16,13 @@ using json = nlohmann::json;
  * @brief The output handler that directly output the string representation
  *  of the schedule steps.
  * 
- * @tparam model Identical / Related / Unrelated
+ * @tparam machine_model Identical / Related / Unrelated
  */
-template <Model model>
+template <Machine_Model machine_model>
 class FileOutputHandler
 {
-using JobT = typename ModelTraits<model>::JobT;
-using MachineT = typename ModelTraits<model>::MachineT;
+using JobT = typename MachineModelTraits<machine_model>::JobT;
+using MachineT = typename MachineModelTraits<machine_model>::MachineT;
 
 public:
     /**
@@ -54,6 +54,7 @@ public:
             output_file_ << "Job : " << jobs[step.jobId_].toString() << "\n";
             output_file_ << "Machine : " << machines[step.machineId_].toString() << "\n";
         }
+        output_file_ << "SnapShot :\n" <<  toSnapShot<MachineT>(machines) << "\n\n";
     }
 
 private:

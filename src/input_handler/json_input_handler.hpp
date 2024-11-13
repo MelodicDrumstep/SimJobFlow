@@ -25,13 +25,13 @@ using json = nlohmann::json;
 /**
  * @brief The input handler that takes all the jobs from a json file.
  * 
- * @tparam model    Identical / Related / Unrelated
+ * @tparam machine_model    Identical / Related / Unrelated
  */
-template <Model model>
+template <Machine_Model machine_model>
 class JsonInputHandler
 {
 public:
-using JobT = typename ModelTraits<model>::JobT;
+using JobT = typename MachineModelTraits<machine_model>::JobT;
 
     /**
      * @brief Parse the json file, do some checking, store all the jobs in a vector.

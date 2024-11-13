@@ -10,35 +10,35 @@ namespace SJF
 {
 
 /**
- * @brief The traits of the model, mapping model type to job type and machine type.
+ * @brief The traits of the machine_model, mapping machine_model type to job type and machine type.
  */
-template <Model model>
-struct ModelTraits
+template <Machine_Model machine_model>
+struct MachineModelTraits
 {
 /*
- if model == Model::Indentical
+ if machine_model == Machine_Model::Indentical
     then MachineT = IndenticalMachine
         JobT = NormalJob
- else if model == Model::Related
+ else if machine_model == Machine_Model::Related
     then MachineT = RelatedMachine
         JobT = NormalJob
- else if model == Model::UnRelated
+ else if machine_model == Machine_Model::UnRelated
     then MachineT = UnrelatedMachine
         JobT = UnrelatedJob
 */
 
 using MachineT = std::conditional_t<
-    model == Model::Identical,
+    machine_model == Machine_Model::Identical,
     IdenticalMachine,
     std::conditional_t<
-        model == Model::Related,
+        machine_model == Machine_Model::Related,
         RelatedMachine,
         UnrelatedMachine
     >
 >;
 
 using JobT = std::conditional_t<
-    model == Model::Unrelated,
+    machine_model == Machine_Model::Unrelated,
     UnrelatedJob,
     NormalJob
 >;

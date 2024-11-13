@@ -12,7 +12,7 @@ int main()
     std::string json_config_path = "../assets/json/config/sample_config.json";
     std::string json_job_path = "../assets/json/job/sample_job.json";
     json config = SimJobFlow::parseJsonFile(json_config_path);
-    SimJobFlow<Model::Identical, 
+    SimJobFlow<Machine_Model::Identical, 
                GreedyScheduler, 
                JsonInputHandler, 
                FileOutputHandler, 

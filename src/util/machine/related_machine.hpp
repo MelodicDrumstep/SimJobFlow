@@ -9,13 +9,13 @@ namespace SJF
 {
 
 /**
- * @brief Machine type of Related model. 
+ * @brief Machine type of Related machine_model. 
  */
 struct RelatedMachine
 {
     int64_t machineId_ = Invalid_Machine_Id;
     int64_t processing_speed_ = Invalid_Processing_Speed;   // the processing speed of this machine
-    int64_t job_id_ = Invalid_Job_Id;                       // the jobId of the current running job on this machine
+    int64_t jobId_ = Invalid_Job_Id;                       // the jobId of the current running job on this machine
     int64_t remaining_time_ = Invalid_Remaining_Time;       // the remaining processing time of the current running job 
 
     RelatedMachine() = default;
@@ -25,7 +25,7 @@ struct RelatedMachine
 
     void setFree()
     {
-        job_id_ = Invalid_Job_Id;
+        jobId_ = Invalid_Job_Id;
         remaining_time_ = Invalid_Remaining_Time;
     }
 
@@ -33,7 +33,7 @@ struct RelatedMachine
     {
         std::string result = "Machine : " + std::to_string(machineId_) + "\n";
         result += "Processing Speed : " + std::to_string(processing_speed_) + "\n";
-        result += "Job : " + std::to_string(job_id_) + "\n";
+        result += "Job : " + std::to_string(jobId_) + "\n";
         result += "Remaining Time : " + std::to_string(remaining_time_) + "\n";
         return result;
     }

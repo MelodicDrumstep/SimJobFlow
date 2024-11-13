@@ -21,7 +21,7 @@ TEST(GreedySchedulerTest, BasicOperations)
     }
 
     json config;
-    GreedyScheduler<Model::Identical> sched(config);
+    GreedyScheduler<Machine_Model::Identical, Release_Model::Real_Time_Arrival> sched(config);
     sched.initialize(num_of_machines);
 
     std::vector<NormalJob> jobs_for_this_turn;

@@ -17,11 +17,11 @@
         },
         {
             "timestamp" : 0,
-            "workload" : 1
+            "workload" : 3
         },
         {
             "timestamp" : 1,
-            "workload" : 1
+            "workload" : 2
         }
     ]
 }

@@ -11,17 +11,17 @@ include_directories(${CMAKE_SOURCE_DIR}/third_party/json/include)
 
 # Add src directory and its subdirectories to include path
 include_directories(${CMAKE_SOURCE_DIR}/src/input_handler)
-include_directories(${CMAKE_SOURCE_DIR}/src/machine)
-include_directories(${CMAKE_SOURCE_DIR}/src/objective)
 include_directories(${CMAKE_SOURCE_DIR}/src/scheduler)
 include_directories(${CMAKE_SOURCE_DIR}/src/scheduler/greedy)
 include_directories(${CMAKE_SOURCE_DIR}/src/timer)
 include_directories(${CMAKE_SOURCE_DIR}/src/visualization)
-include_directories(${CMAKE_SOURCE_DIR}/src/job)
-include_directories(${CMAKE_SOURCE_DIR}/src/model)
 include_directories(${CMAKE_SOURCE_DIR}/src/output_handler)
 include_directories(${CMAKE_SOURCE_DIR}/src/simjobflow)
 include_directories(${CMAKE_SOURCE_DIR}/src/util)
+include_directories(${CMAKE_SOURCE_DIR}/src/util/machine)
+include_directories(${CMAKE_SOURCE_DIR}/src/util/job)
+include_directories(${CMAKE_SOURCE_DIR}/src/util/model)
+include_directories(${CMAKE_SOURCE_DIR}/src/util/objective)
 include_directories(${CMAKE_SOURCE_DIR}/src/util/exception)
 
 # Add subdirectoriesa

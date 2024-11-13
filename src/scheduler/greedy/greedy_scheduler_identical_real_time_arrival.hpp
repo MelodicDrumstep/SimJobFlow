@@ -20,15 +20,15 @@ namespace SJF
 using json = nlohmann::json;
 
 /**
- * @brief Greedy scheduler of Identical model.
+ * @brief Greedy scheduler of Identical machine_model, and real time arrival release model.
  */
-class GreedySchedulerIdentical
+class GreedySchedulerIdenticalRealTimeArrival
 {
 // JobHeap is a heap with a compare function based on the workload of the job
 using JobHeap = std::priority_queue<NormalJob, std::vector<NormalJob>, NormalJobWorkloadCmp>;
 
 public:
-    GreedySchedulerIdentical(const json & config)  {}
+    GreedySchedulerIdenticalRealTimeArrival(const json & config)  {}
 
     /**
      * @brief Initialize the machine_free_list

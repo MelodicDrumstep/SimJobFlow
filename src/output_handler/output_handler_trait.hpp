@@ -11,10 +11,10 @@ namespace SJF
 /**
  * @brief A concept constraining the output handler type.
  */
-template <typename OutputHandlerT, Model model>
+template <typename OutputHandlerT, Machine_Model machine_model>
 concept OutputHandler = requires(OutputHandlerT output_handler,
-                                 std::vector<typename ModelTraits<model>::MachineT> machines,
-                                 std::vector<typename ModelTraits<model>::JobT> jobs,
+                                 std::vector<typename MachineModelTraits<machine_model>::MachineT> machines,
+                                 std::vector<typename MachineModelTraits<machine_model>::JobT> jobs,
                                  int64_t timestamp,
                                  std::vector<ScheduleStep> schedule_steps)
 {

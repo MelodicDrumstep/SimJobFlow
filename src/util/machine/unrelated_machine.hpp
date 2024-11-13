@@ -9,12 +9,12 @@ namespace SJF
 {
 
 /**
- * @brief Machine type of Unrelated model. 
+ * @brief Machine type of Unrelated machine_model. 
  */
 struct UnrelatedMachine
 {
     int32_t machineId_ = Invalid_Machine_Id;
-    int32_t job_id_ = Invalid_Job_Id;                   // the jobId of the current running job on this machine
+    int32_t jobId_ = Invalid_Job_Id;                   // the jobId of the current running job on this machine
     int64_t remaining_time_ = Invalid_Remaining_Time;   // the remaining processing time of the current running job 
 
     UnrelatedMachine() = default;
@@ -23,14 +23,14 @@ struct UnrelatedMachine
 
     void setFree()
     {
-        job_id_ = Invalid_Job_Id;
+        jobId_ = Invalid_Job_Id;
         remaining_time_ = Invalid_Remaining_Time;
     }
 
     std::string toString() const
     {
         std::string result = "Machine : " + std::to_string(machineId_) + "\n";
-        result += "Job : " + std::to_string(job_id_) + "\n";
+        result += "Job : " + std::to_string(jobId_) + "\n";
         result += "Remaining Time : " + std::to_string(remaining_time_) + "\n";
         return result;
     }   

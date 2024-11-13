@@ -6,14 +6,14 @@ namespace SJF
 {
 
 /**
- * @brief Normal job, used in Identical model and Related model. 
+ * @brief Normal job, used in Identical machine_model and Related machine_model. 
  */
 struct NormalJob
 {
     int64_t timestamp_; // the timestamp when this job enters
-    int64_t workload_;  // the workload of this job. In Identical model, all machines have processing speed as 1
+    int64_t workload_;  // the workload of this job. In Identical machine_model, all machines have processing speed as 1
                         // therefore the workload is the same as the processing time of this job
-                        // In Related model, different machines have different processing speed
+                        // In Related machine_model, different machines have different processing speed
                         // therefore the processing time is "workload / processing speed of the machine"
     int64_t id_;        // jobId, sorted by timestamp
 
@@ -30,7 +30,7 @@ struct NormalJob
 
     bool operator<(const NormalJob & other) const
     {
-        return (timestamp_ < other.timestamp_) || (timestamp_ == other.timestamp_ && workload_ < other.workload_);
+        return (timestamp_ < other.timestamp_) || (timestamp_ == other.timestamp_ && workload_ > other.workload_);
     }
 
     std::string toString() const

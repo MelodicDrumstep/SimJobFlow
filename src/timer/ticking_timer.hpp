@@ -12,10 +12,10 @@ using json = nlohmann::json;
 /**
  * @brief The ticking timer. The elapsing time of each turn is just 1.
  */
-template <Model model>
+template <Machine_Model machine_model>
 class TickingTimer
 {
-using MachineT = typename ModelTraits<model>::MachineT;
+using MachineT = typename MachineModelTraits<machine_model>::MachineT;
 
 public:
     TickingTimer(const json & config) {}
