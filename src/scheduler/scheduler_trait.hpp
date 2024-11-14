@@ -24,6 +24,7 @@ concept Scheduler = requires(SchedulerT scheduler,
     { scheduler.schedule(jobs_for_this_turn, machines, timestamp) } -> std::same_as<std::vector<ScheduleStep>>;
     { scheduler.initialize(num_of_machines) } -> std::same_as<void>;
     { scheduler.updateMachineState(machines, elapsing_time) } -> std::same_as<void>;
+    { scheduler.done() } -> std::same_as<bool>;
 };
 
 }

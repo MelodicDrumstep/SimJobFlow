@@ -108,8 +108,10 @@ public:
         for(size_t i = 0; i < machines.size(); i++)
         {
             auto & machine = machines[i];
+            bool done_flag = true;
             if(machine.remaining_time_ != Invalid_Remaining_Time)
             {
+                done_flag = false;
                 machine.remaining_time_ = std::max(static_cast<int64_t>(0), machine.remaining_time_ - elapsing_time);
                 if(machine.remaining_time_ == 0)
                 {
@@ -117,7 +119,19 @@ public:
                     machine_free_list_.push_back(i);
                 }
             }
+            is_done_ = done_flag;
+            // If there's no running job on any machine, set is_done_ to true
         }
+    }
+
+    /**
+     * @brief Check if there's no more jobs.
+     * 
+     * @return true is there's no more jobs, false otherwise.
+     */
+    bool done() const
+    {
+        return is_done_;
     }
 
     /**
@@ -136,6 +150,7 @@ public:
 private:
     JobHeap accumulated_jobs_;    // a job heap storing all accumulated jobs
     std::vector<int64_t> machine_free_list_;    // store the id of all free machines
+    bool is_done_ = false;  
 
     /**
      * @brief For debug only.

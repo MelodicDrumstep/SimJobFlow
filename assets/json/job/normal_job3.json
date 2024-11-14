@@ -1,0 +1,27 @@
+{
+    "Type" : "Normal",
+    "Num_of_Machines" : 2,
+    "Jobs" : 
+    [
+        {
+            "timestamp" : 2,
+            "workload" : 5
+        },
+        {
+            "timestamp" : 2,
+            "workload" : 3
+        },
+        {
+            "timestamp" : 3,
+            "workload" : 3
+        },
+        {
+            "timestamp" : 0,
+            "workload" : 3
+        },
+        {
+            "timestamp" : 1,
+            "workload" : 2
+        }
+    ]
+}

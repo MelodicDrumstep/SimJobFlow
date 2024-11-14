@@ -80,7 +80,7 @@ public:
 
     void start()
     {
-        while(!input_handler_ -> done())   
+        while((!input_handler_ -> done()) || (!scheduler_ -> done()))   
         {
             auto timestamp = timer_ -> timestamp(); // get the current timestamp
             std::optional<std::vector<JobT>> jobs_for_this_turn = input_handler_ -> getJobs(timestamp);
