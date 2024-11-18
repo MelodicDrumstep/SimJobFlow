@@ -115,12 +115,18 @@ private:
      */
     void initializeMachines(const json & config)
     {
+        // DEBUGING
+        #ifdef DEBUG_SJF
+            std::cout << "[SimJobFlow::initializeMachines]\n";
+        #endif
+        // DEBUGING   
+
         machines_.reserve(num_of_machines_);
         if constexpr (machine_model == Machine_Model::Related)
         {
             // If the machine_model is Related, there's a processing speed field for the machine type
             // configure it using the field in json object
-            std::vector<int64_t> processing_speed = config["Processing_Speed"];
+            std::vector<int64_t> processing_speed = config["Processing_Speed"].get<std::vector<int64_t>>();
             if(processing_speed.size() != num_of_machines_)
             {
                 throw std::runtime_error("The number of processing speed is not equal to the number of machines");

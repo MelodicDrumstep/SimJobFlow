@@ -14,13 +14,13 @@ using namespace SJF;
 
 #define DEBUG_INTEG_TEST
 
-TEST(IntegrationTest, RealTimeBasicIntegration1) 
+TEST(IntegrationTest, IdenticalRealTimeBasicIntegration1) 
 {
     using SchedulerT = GreedyScheduler<Machine_Model::Identical, Release_Model::Real_Time_Arrival>;
 
-    std::string json_config_path = "../../../assets/json/config/sample_config1.json";
+    std::string json_config_path = "../../../assets/json/config/identical_config1.json";
     std::string json_job_path = "../../../assets/json/job/normal_job1.json";
-    std::string output_path = "../../../assets/output/real_time_output1.log";
+    std::string output_path = "../../../assets/output/Ireal_time_output1.log";
     json config = parseJsonFile(json_config_path);
 
     SimJobFlow<Machine_Model::Identical, 
@@ -36,13 +36,13 @@ TEST(IntegrationTest, RealTimeBasicIntegration1)
     simjobflow.start();
 }
 
-TEST(IntegrationTest, RealTimeBasicIntegration2) 
+TEST(IntegrationTest, IdenticalRealTimeBasicIntegration2) 
 {
     using SchedulerT = GreedyScheduler<Machine_Model::Identical, Release_Model::Real_Time_Arrival>;
 
-    std::string json_config_path = "../../../assets/json/config/sample_config2.json";
+    std::string json_config_path = "../../../assets/json/config/identical_config2.json";
     std::string json_job_path = "../../../assets/json/job/normal_job2.json";
-    std::string output_path = "../../../assets/output/real_time_output2.log";
+    std::string output_path = "../../../assets/output/Ireal_time_output2.log";
     json config = parseJsonFile(json_config_path);
 
     SimJobFlow<Machine_Model::Identical, 
@@ -58,13 +58,13 @@ TEST(IntegrationTest, RealTimeBasicIntegration2)
     simjobflow.start();
 }
 
-TEST(IntegrationTest, ListBasicIntegration1) 
+TEST(IntegrationTest, IdenticalListBasicIntegration1) 
 {
     using SchedulerT = GreedyScheduler<Machine_Model::Identical, Release_Model::List_Arrival>;
 
-    std::string json_config_path = "../../../assets/json/config/sample_config1.json";
+    std::string json_config_path = "../../../assets/json/config/identical_config1.json";
     std::string json_job_path = "../../../assets/json/job/normal_job1.json";
-    std::string output_path = "../../../assets/output/list_output1.log";
+    std::string output_path = "../../../assets/output/Ilist_output1.log";
     json config = parseJsonFile(json_config_path);
 
     SimJobFlow<Machine_Model::Identical, 
@@ -80,13 +80,13 @@ TEST(IntegrationTest, ListBasicIntegration1)
     simjobflow.start();
 }
 
-TEST(IntegrationTest, ListBasicIntegration2) 
+TEST(IntegrationTest, IdenticalListBasicIntegration2) 
 {
     using SchedulerT = GreedyScheduler<Machine_Model::Identical, Release_Model::List_Arrival>;
 
-    std::string json_config_path = "../../../assets/json/config/sample_config2.json";
+    std::string json_config_path = "../../../assets/json/config/identical_config2.json";
     std::string json_job_path = "../../../assets/json/job/normal_job2.json";
-    std::string output_path = "../../../assets/output/list_output2.log";
+    std::string output_path = "../../../assets/output/Ilist_output2.log";
     json config = parseJsonFile(json_config_path);
 
     SimJobFlow<Machine_Model::Identical, 
@@ -102,13 +102,13 @@ TEST(IntegrationTest, ListBasicIntegration2)
     simjobflow.start();
 }
 
-TEST(IntegrationTest, ListBasicIntegration3) 
+TEST(IntegrationTest, IdenticalListBasicIntegration3) 
 {
     using SchedulerT = GreedyScheduler<Machine_Model::Identical, Release_Model::List_Arrival>;
 
-    std::string json_config_path = "../../../assets/json/config/sample_config1.json";
+    std::string json_config_path = "../../../assets/json/config/identical_config1.json";
     std::string json_job_path = "../../../assets/json/job/normal_job3.json";
-    std::string output_path = "../../../assets/output/list_output3.log";
+    std::string output_path = "../../../assets/output/Ilist_output3.log";
     json config = parseJsonFile(json_config_path);
 
     SimJobFlow<Machine_Model::Identical, 
@@ -120,6 +120,72 @@ TEST(IntegrationTest, ListBasicIntegration3)
                                        std::make_unique<JsonInputHandler<Machine_Model::Identical>>(config, json_job_path), 
                                        std::make_unique<FileOutputHandler<Machine_Model::Identical>>(config, output_path), 
                                        std::make_unique<TickingTimer<Machine_Model::Identical>>(config));
+                
+    simjobflow.start();
+}
+
+TEST(IntegrationTest, RelatedListBasicIntegration1) 
+{
+    using SchedulerT = GreedyScheduler<Machine_Model::Related, Release_Model::List_Arrival>;
+
+    std::string json_config_path = "../../../assets/json/config/related_config1.json";
+    std::string json_job_path = "../../../assets/json/job/normal_job1.json";
+    std::string output_path = "../../../assets/output/Rlist_output1.log";
+    json config = parseJsonFile(json_config_path);
+
+    SimJobFlow<Machine_Model::Related, 
+               SchedulerT, 
+               JsonInputHandler<Machine_Model::Related>, 
+               FileOutputHandler<Machine_Model::Related>, 
+               TickingTimer<Machine_Model::Related>> simjobflow(config, 
+                                       std::make_unique<SchedulerT>(config), 
+                                       std::make_unique<JsonInputHandler<Machine_Model::Related>>(config, json_job_path), 
+                                       std::make_unique<FileOutputHandler<Machine_Model::Related>>(config, output_path), 
+                                       std::make_unique<TickingTimer<Machine_Model::Related>>(config));
+                
+    simjobflow.start();
+}
+
+TEST(IntegrationTest, RelatedListBasicIntegration2) 
+{
+    using SchedulerT = GreedyScheduler<Machine_Model::Related, Release_Model::List_Arrival>;
+
+    std::string json_config_path = "../../../assets/json/config/related_config2.json";
+    std::string json_job_path = "../../../assets/json/job/normal_job2.json";
+    std::string output_path = "../../../assets/output/Rlist_output2.log";
+    json config = parseJsonFile(json_config_path);
+
+    SimJobFlow<Machine_Model::Related, 
+               SchedulerT, 
+               JsonInputHandler<Machine_Model::Related>, 
+               FileOutputHandler<Machine_Model::Related>, 
+               TickingTimer<Machine_Model::Related>> simjobflow(config, 
+                                       std::make_unique<SchedulerT>(config), 
+                                       std::make_unique<JsonInputHandler<Machine_Model::Related>>(config, json_job_path), 
+                                       std::make_unique<FileOutputHandler<Machine_Model::Related>>(config, output_path), 
+                                       std::make_unique<TickingTimer<Machine_Model::Related>>(config));
+                
+    simjobflow.start();
+}
+
+TEST(IntegrationTest, RelatedListBasicIntegration3) 
+{
+    using SchedulerT = GreedyScheduler<Machine_Model::Related, Release_Model::List_Arrival>;
+
+    std::string json_config_path = "../../../assets/json/config/related_config1.json";
+    std::string json_job_path = "../../../assets/json/job/normal_job3.json";
+    std::string output_path = "../../../assets/output/Rlist_output3.log";
+    json config = parseJsonFile(json_config_path);
+
+    SimJobFlow<Machine_Model::Related, 
+               SchedulerT, 
+               JsonInputHandler<Machine_Model::Related>, 
+               FileOutputHandler<Machine_Model::Related>, 
+               TickingTimer<Machine_Model::Related>> simjobflow(config, 
+                                       std::make_unique<SchedulerT>(config), 
+                                       std::make_unique<JsonInputHandler<Machine_Model::Related>>(config, json_job_path), 
+                                       std::make_unique<FileOutputHandler<Machine_Model::Related>>(config, output_path), 
+                                       std::make_unique<TickingTimer<Machine_Model::Related>>(config));
                 
     simjobflow.start();
 }

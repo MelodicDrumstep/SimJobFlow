@@ -5,11 +5,11 @@
     [
         {
             "timestamp" : 0,
-            "workload" : 1
+            "workload" : 2
         },
         {
             "timestamp" : 1,
-            "workload" : 1
+            "workload" : 2
         }
     ]
 }

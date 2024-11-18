@@ -23,16 +23,28 @@ struct RelatedMachine
     RelatedMachine(int64_t machineId, int64_t processing_speed)
      : machineId_(machineId), processing_speed_(processing_speed) {}
 
+    bool isFree() const
+    {
+        assert(((jobId_ == Invalid_Job_Id) && (remaining_time_ == Invalid_Remaining_Time)) || 
+               ((jobId_ != Invalid_Job_Id) && (remaining_time_ != Invalid_Remaining_Time)));
+        return (jobId_ == Invalid_Job_Id);
+    }
+
     void setFree()
     {
         jobId_ = Invalid_Job_Id;
         remaining_time_ = Invalid_Remaining_Time;
     }
 
-    std::string toString() const
+    void execute(int64_t job_id, int64_t remaining_time)
     {
+        jobId_ = job_id;
+        remaining_time_ = remaining_time;
+    }
+
+    std::string toString() const
+    { 
         std::string result = "Machine : " + std::to_string(machineId_) + "\n";
-        result += "Processing Speed : " + std::to_string(processing_speed_) + "\n";
         result += "Job : " + std::to_string(jobId_) + "\n";
         result += "Remaining Time : " + std::to_string(remaining_time_) + "\n";
         return result;

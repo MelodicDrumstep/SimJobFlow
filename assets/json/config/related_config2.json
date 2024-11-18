@@ -1,0 +1,9 @@
+{
+    "Num_of_Machines" : 3,
+    "Processing_Speed":
+    [
+        1, 
+        2, 
+        5
+    ]
+}
