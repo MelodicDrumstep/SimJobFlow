@@ -25,7 +25,7 @@ using json = nlohmann::json;
 class GreedySchedulerRelatedRealTimeArrival
 {
 // JobHeap is a heap with a compare function based on the workload of the job
-using JobHeap = std::priority_queue<NormalJob, std::vector<NormalJob>, NormalJobWorkloadCmp>;
+using JobHeap = std::priority_queue<RelatedJob, std::vector<RelatedJob>, RelatedJobWorkloadCmp>;
 
 public:
     GreedySchedulerRelatedRealTimeArrival(const json & config)  {}
@@ -45,8 +45,8 @@ public:
     /**
      * @brief Schedule the jobs onto free machines and output schedule steps
      */
-    std::vector<ScheduleStep> schedule(const std::vector<NormalJob> & jobs_for_this_turn,
-                                       std::vector<IdenticalMachine> & machines,
+    std::vector<ScheduleStep> schedule(const std::vector<RelatedJob> & jobs_for_this_turn,
+                                       std::vector<RelatedMachine> & machines,
                                        int64_t timestamp)
     {   
         // DEBUGING
@@ -82,7 +82,7 @@ public:
         while((!machine_free_list_.empty()) && (!accumulated_jobs_.empty()))
         {
             // when there's free machine and remaining jobs, we can schedule the job at the top of the heap onto any machine
-            const NormalJob & current_job = accumulated_jobs_.top();
+            const RelatedJob & current_job = accumulated_jobs_.top();
             int64_t machine_id = machine_free_list_.back();
             machine_free_list_.pop_back();
             machines[machine_id].execute(current_job.id_, current_job.workload_);
@@ -103,7 +103,7 @@ public:
      * @brief Modify the remaining time of the busy machines and add the machines that has done their job
      * to the machine free list 
      */
-    void updateMachineState(std::vector<IdenticalMachine> & machines, int64_t elapsing_time)
+    void updateMachineState(std::vector<RelatedMachine> & machines, int64_t elapsing_time)
     {
         for(size_t i = 0; i < machines.size(); i++)
         {
@@ -155,9 +155,9 @@ private:
     /**
      * @brief For debug only.
      */
-    std::vector<NormalJob> jobHeap2Vector()
+    std::vector<RelatedJob> jobHeap2Vector()
     {
-        std::vector<NormalJob> jobs;
+        std::vector<RelatedJob> jobs;
         while(!accumulated_jobs_.empty())
         {
             // DEBUGING

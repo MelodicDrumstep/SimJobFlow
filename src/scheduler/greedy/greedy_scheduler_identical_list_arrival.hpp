@@ -172,9 +172,9 @@ public:
                     machine.execute(top_pending_job.id_, top_pending_job.workload_);
                 }
             }
-            is_done_ = done_flag;
-            // If there's no running job on any machine and no pending jobs, set is_done_ to true
         }
+        is_done_ = done_flag;
+        // If there's no running job on any machine and no pending jobs, set is_done_ to true
     }
 
     /**

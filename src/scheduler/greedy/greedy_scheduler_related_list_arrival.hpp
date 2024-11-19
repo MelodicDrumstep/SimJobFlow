@@ -19,7 +19,7 @@
 namespace SJF
 {
 
-#define DEBUG_SCHED_ID_LIST
+#define DEBUG_SCHED_RL_LIST
 
 using json = nlohmann::json;
 
@@ -33,9 +33,11 @@ public:
     GreedySchedulerRelatedListArrival(const json & config) {}
 
     /**
-     * @brief Initialize the machine state array and the machine state heap
-     * machine state heap is represented as a std::vector
-     *  And we will use std::make_heap / std::push_heap / std::pop_heap to manipulate it
+     * @brief Initialize the machine state extended array and the machine state temp array
+     * machine state extended array contains some extended information for machine state
+     * such as total pending time and pendng job list
+     * machine state temp array is just used for selecting the machine to schedule the job
+     * each time a jobs arrives
      */
     void initialize(int64_t num_of_machines)
     {
@@ -57,7 +59,7 @@ public:
                                        int64_t timestamp)
     {   
         // DEBUGING
-        #ifdef DEBUG_SCHED_ID_LIST
+        #ifdef DEBUG_SCHED_RL_LIST
             std::cout << "Inside GreedySchedulerRelatedList::schedule()\n";
         #endif
         // DEBUGING
@@ -69,14 +71,13 @@ public:
         {
             const NormalJob & job = jobs_for_this_turn[i];
             int64_t machineId = findSuitableMachine(job.workload_, machines);
-            // machine state heap[0] is the top of the heap
-            // i.e. take out the machine with the least total pending time
+            // findSuitableMachine will select the correct machine based on greedy
             MachineState & machine_state = machine_state_extended_array_[machineId];
             RelatedMachine & machine = machines[machineId];
             int64_t expected_job_running_time = (job.workload_ + machine.processing_speed_ - 1) / machine.processing_speed_;
 
             // DEBUGING
-            #ifdef DEBUG_SCHED_ID_LIST
+            #ifdef DEBUG_SCHED_RL_LIST
                 std::cout << "machine : \n" << machine.toString() << "\n";
                 std::cout << "machineState : \n" << machine_state.toString() << "\n";
             #endif
@@ -89,7 +90,7 @@ public:
                 // because if so, updateMachineState will execute that pending job on this machine.
 
                 // DEBUGING
-                #ifdef DEBUG_SCHED_ID_LIST
+                #ifdef DEBUG_SCHED_RL_LIST
                     std::cout << "machine is free, schedule onto it\n";
                 #endif
                 // DEBUGING
@@ -105,7 +106,7 @@ public:
         }
 
         // DEBUGING
-        #ifdef DEBUG_SCHED_ID_LIST
+        #ifdef DEBUG_SCHED_RL_LIST
             std::cout << "After schedule, printing the machine_state_extended_array\n";
             for(auto & machine_state : machine_state_extended_array_)
             {
@@ -123,7 +124,7 @@ public:
     void updateMachineState(std::vector<RelatedMachine> & machines, int64_t elapsing_time)
     {
         // DEBUGING
-        #ifdef DEBUG_SCHED_ID_LIST
+        #ifdef DEBUG_SCHED_RL_LIST
             std::cout << "Inside GreedySchedulerRelatedListupdateMachineState\n";
             std::cout << "elapsing time : " << elapsing_time << "\n";
         #endif
@@ -137,9 +138,9 @@ public:
             auto & machine_state = machine_state_extended_array_[i];
 
             // DEBUGING
-            #ifdef DEBUG_SCHED_ID_LIST
+            #ifdef DEBUG_SCHED_RL_LIST
                 std::cout << "machine : \n" << machine.toString() << std::endl;
-                std::cout << "machineState : n" << machine_state.toString() << std::endl;
+                std::cout << "machineState : \n" << machine_state.toString() << std::endl;
             #endif
             // DEBUGING
 
@@ -153,7 +154,7 @@ public:
                 machine_state.total_pending_time_ -= job_executing_time;
 
                 // DEBUGING
-                #ifdef DEBUG_SCHED_ID_LIST
+                #ifdef DEBUG_SCHED_RL_LIST
                     std::cout << "job_executing_time : " << job_executing_time << "\n";
                 #endif
                 // DEBUGING                
@@ -173,22 +174,23 @@ public:
                     auto & top_pending_job = machine_state.pending_jobs_.front();
                     machine_state.pending_jobs_.pop_front();
                     int64_t expected_job_running_time = (top_pending_job.workload_ + machine.processing_speed_ - 1) /machine.processing_speed_;
+                    // We must consider the processing speed of the machine
                     machine.execute(top_pending_job.id_, expected_job_running_time);
                 }
             }
-            is_done_ = done_flag;
-            // If there's no running job on any machine and no pending jobs, set is_done_ to true
-
-            // DEBUGING
-            #ifdef DEBUG_SCHED_ID_LIST
-                std::cout << "After updateMachineState, printing the machine_state_extended_array\n";
-                for(auto & machine_state : machine_state_extended_array_)
-                {
-                    std::cout << machine_state.toString() << std::endl;
-                }
-            #endif
-            // DEBUGING
         }
+        is_done_ = done_flag;
+        // If there's no running job on any machine and no pending jobs, set is_done_ to true
+
+        // DEBUGING
+        #ifdef DEBUG_SCHED_RL_LIST
+            std::cout << "After updateMachineState, printing the machine_state_extended_array\n";
+            for(auto & machine_state : machine_state_extended_array_)
+            {
+                std::cout << machine_state.toString() << std::endl;
+            }
+        #endif
+        // DEBUGING
     }
 
     /**
@@ -208,6 +210,7 @@ private:
     struct MachineState
     {
         int64_t total_pending_time_ = 0;    // remaining time of the current job is counted in this variable
+        // for job i and machine j, the time to execute the job is workload_i / processing_speed_j
         std::deque<NormalJob> pending_jobs_;
 
         MachineState() = default;
@@ -225,6 +228,7 @@ private:
         { 
             std::stringstream ss;
             ss << "total_pending_time : " << total_pending_time_ << "\n";
+            ss << "pending_jobs_.size() : " << pending_jobs_.size() << "\n";
             for(auto & job : pending_jobs_)
             {
                 ss << job.toString() << "\n";
@@ -234,18 +238,18 @@ private:
     };
 
     /**
-     * @brief The heap node for MachineState. Includes machine id and total pending time.
-     *  It saves memory in heap because it does not store the pending job list.
+     * @brief The node for machine temp array. Includes machine id, total pending time and the corresponding processing speed.
      */
     struct MachineStateNode
     {
         int64_t machineId_;
         int64_t total_pending_time_ = 0;    // remaining time of the current job is counted in this variable
+        int64_t processing_speed_;
 
         MachineStateNode() = default;
 
-        MachineStateNode(int64_t machineId, int64_t total_pending_time) 
-            : machineId_(machineId), total_pending_time_(total_pending_time) {}
+        MachineStateNode(int64_t machineId, int64_t total_pending_time, int64_t processing_speed) 
+            : machineId_(machineId), total_pending_time_(total_pending_time), processing_speed_(processing_speed) {}
         MachineStateNode(const MachineStateNode & other) = default;
         MachineStateNode(MachineStateNode && other) = default;
         MachineStateNode & operator=(const MachineStateNode & other) = default;
@@ -253,7 +257,11 @@ private:
 
         bool operator<(const MachineStateNode & other) const
         {
-            return total_pending_time_ < other.total_pending_time_;
+            if(total_pending_time_ != other.total_pending_time_)
+            {
+                return total_pending_time_ < other.total_pending_time_;
+            }
+            return processing_speed_ < other.processing_speed_;
         }
 
         bool operator>(const MachineStateNode & other) const
@@ -265,26 +273,45 @@ private:
         {
             return (total_pending_time_ == 0);
         }
+
+        std::string toString() const
+        { 
+            std::stringstream ss;
+            ss << "machineId : " << machineId_ << "\n";
+            ss << "total_pending_time : " << total_pending_time_ << "\n";
+            ss << "processing_speed : " << processing_speed_ << "\n";
+            return ss.str();
+        }
     };    
 
     std::vector<MachineState> machine_state_extended_array_;
     // the machine state array that can be indexed through the machine id
     std::vector<MachineStateNode> machine_state_temp_array_;
-    // the heap used for selecting the machine to schedule the incoming jobs
+    // the temp array will be filled each time we have to select a machine to execute the certain job
 
     bool is_done_ = false;
 
     /**
-     * @brief Copy the content from the machine state array to the machine state heap, and heapify it
+     * @brief Fill the machine state temp array, and use std::min_element to get the most suitable element in O(n) time.
      */
     int64_t findSuitableMachine(int64_t workload, const std::vector<RelatedMachine> & machines)
     {
         for(size_t i = 0; i < machine_state_extended_array_.size(); i++)
         {
+            auto & machine = machines[i];
             machine_state_temp_array_[i] = std::move(MachineStateNode(i, 
                 machine_state_extended_array_[i].total_pending_time_ + 
-                (workload + machines[i].processing_speed_ - 1) / machines[i].processing_speed_));
+                (workload + machine.processing_speed_ - 1) / machine.processing_speed_,
+                machine.processing_speed_));
         }
+
+        // DEBUGING
+        #ifdef DEBUG_SCHED_RL_LIST
+            std::cout << "Inside findSuitableMachine. The min element in machne state temp array is : \n";
+            std::cout << std::min_element(machine_state_temp_array_.begin(), machine_state_temp_array_.end()) -> toString() << "\n";
+        #endif
+        // DEBUGING
+
         return std::min_element(machine_state_temp_array_.begin(), machine_state_temp_array_.end()) -> machineId_;
     }
 };
