@@ -57,6 +57,11 @@ public:
         output_file_ << "SnapShot :\n" <<  toSnapShot<MachineT>(machines) << "\n\n";
     }
 
+    void output(const int64_t timestamp) 
+    {
+        output_file_ << "\n\nTotal Executing Time : " << timestamp << "\n"; 
+    }
+
 private:
     std::ofstream output_file_;
 };

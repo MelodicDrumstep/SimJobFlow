@@ -18,5 +18,6 @@ concept OutputHandler = requires(OutputHandlerT output_handler,
                                  std::vector<ScheduleStep> schedule_steps)
 {
     { output_handler.output(machines, jobs, timestamp, schedule_steps) } -> std::same_as<void>;
+    { output_handler.output(timestamp) } -> std::same_as<void>;
 };
 }

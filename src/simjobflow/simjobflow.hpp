@@ -75,6 +75,9 @@ public:
         scheduler_ -> initialize(num_of_machines_, machines_);
     }
 
+    /**
+     * @brief Start the scheduling rountine
+     */
     void start()
     {
         while((!input_handler_ -> done()) || (!scheduler_ -> done()))   
@@ -96,6 +99,8 @@ public:
             // This task is given to the scheduler rather than the timer is because the scheduler 
             // can update some inner data structures at the same time.
         }
+
+        output_handler_ -> output(timer_ -> timestamp());
     }
 
 private:

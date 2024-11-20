@@ -1,0 +1,70 @@
+{
+    "Type" : "Unrelated",
+    "Num_of_Machines" : 3,
+    "Jobs" : 
+    [
+        {
+            "timestamp" : 0,
+            "processing_time" : 
+            [
+                3,
+                2,
+                2
+            ]
+        },
+        {
+            "timestamp" : 0,
+            "processing_time" : 
+            [
+                4,
+                4,
+                4
+            ]
+        },
+        {
+            "timestamp" : 0,
+            "processing_time" : 
+            [
+                2,
+                4,
+                5
+            ]
+        },
+        {
+            "timestamp" : 0,
+            "processing_time" : 
+            [
+                3,
+                5,
+                2
+            ]
+        },
+        {
+            "timestamp" : 1,
+            "processing_time" : 
+            [
+                5,
+                3,
+                4
+            ]
+        },
+        {
+            "timestamp" : 1,
+            "processing_time" : 
+            [
+                2,
+                2,
+                4
+            ]
+        },
+        {
+            "timestamp" : 2,
+            "processing_time" : 
+            [
+                4,
+                3,
+                2
+            ]
+        }
+    ]
+}

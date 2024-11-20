@@ -9,7 +9,7 @@
 #include "greedy_scheduler_related_list_arrival.hpp"
 #include "greedy_scheduler_related_real_time_arrival.hpp"
 #include "greedy_scheduler_unrelated_list_arrival.hpp"
-// #include "greedy_scheduler_unrelated_real_time_arrival.hpp"
+#include "greedy_scheduler_unrelated_real_time_arrival.hpp"
 #include "not_supported_scheduler_type.hpp"
 
 namespace SJF
@@ -40,7 +40,7 @@ using GreedyScheduler = std::conditional_t<
         std::conditional_t<
             release_model == Release_Model::List_Arrival,
             GreedySchedulerUnrelatedListArrival,
-            NotSupportedSchedulerType
+            GreedySchedulerUnrelatedRealTimeArrival
         >
     >
 >;

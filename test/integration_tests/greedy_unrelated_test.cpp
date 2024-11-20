@@ -82,8 +82,101 @@ TEST(IntegrationTest, UnrelatedListBasicIntegration3)
     using SchedulerT = GreedyScheduler<Machine_Model::Unrelated, Release_Model::List_Arrival>;
 
     std::string json_config_path = "../../../assets/json/config/normal_config2.json";
-    std::string json_job_path = "../../../assets/json/job/unrelated_job2.json";
+    std::string json_job_path = "../../../assets/json/job/unrelated_job3.json";
     std::string output_path = "../../../assets/output/URlist_output3.log";
+    json config = parseJsonFile(json_config_path);
+
+    SimJobFlow<Machine_Model::Unrelated, 
+               SchedulerT, 
+               JsonInputHandler<Machine_Model::Unrelated>, 
+               FileOutputHandler<Machine_Model::Unrelated>, 
+               TickingTimer<Machine_Model::Unrelated>> simjobflow(config, 
+                                       std::make_unique<SchedulerT>(config), 
+                                       std::make_unique<JsonInputHandler<Machine_Model::Unrelated>>(config, json_job_path), 
+                                       std::make_unique<FileOutputHandler<Machine_Model::Unrelated>>(config, output_path), 
+                                       std::make_unique<TickingTimer<Machine_Model::Unrelated>>(config));
+                
+    try
+    {
+        simjobflow.start();
+    }
+    catch (const std::exception &e) 
+    {
+        std::cerr << "Caught an exception: " << e.what() << std::endl;
+    }
+}
+
+TEST(IntegrationTest, UnrelatedRealTimeBasicIntegration1) 
+{
+    NanoLog::setLogFile("./UnrelatedRealTimeBasicIntegration1.log");
+    NanoLog::setLogLevel(DEBUG);
+    using SchedulerT = GreedyScheduler<Machine_Model::Unrelated, Release_Model::Real_Time_Arrival>;
+
+    std::string json_config_path = "../../../assets/json/config/normal_config1.json";
+    std::string json_job_path = "../../../assets/json/job/unrelated_job1.json";
+    std::string output_path = "../../../assets/output/URrealtime_output1.log";
+    json config = parseJsonFile(json_config_path);
+
+    SimJobFlow<Machine_Model::Unrelated, 
+               SchedulerT, 
+               JsonInputHandler<Machine_Model::Unrelated>, 
+               FileOutputHandler<Machine_Model::Unrelated>, 
+               TickingTimer<Machine_Model::Unrelated>> simjobflow(config, 
+                                       std::make_unique<SchedulerT>(config), 
+                                       std::make_unique<JsonInputHandler<Machine_Model::Unrelated>>(config, json_job_path), 
+                                       std::make_unique<FileOutputHandler<Machine_Model::Unrelated>>(config, output_path), 
+                                       std::make_unique<TickingTimer<Machine_Model::Unrelated>>(config));
+                
+    try
+    {
+        simjobflow.start();
+    }
+    catch (const std::exception &e) 
+    {
+        std::cerr << "Caught an exception: " << e.what() << std::endl;
+    }
+}
+
+TEST(IntegrationTest, UnrelatedRealTimeBasicIntegration2) 
+{
+    NanoLog::setLogFile("./UnrelatedRealTimeBasicIntegration2.log");
+    NanoLog::setLogLevel(DEBUG);
+    using SchedulerT = GreedyScheduler<Machine_Model::Unrelated, Release_Model::Real_Time_Arrival>;
+
+    std::string json_config_path = "../../../assets/json/config/normal_config2.json";
+    std::string json_job_path = "../../../assets/json/job/unrelated_job2.json";
+    std::string output_path = "../../../assets/output/URrealtime_output2.log";
+    json config = parseJsonFile(json_config_path);
+
+    SimJobFlow<Machine_Model::Unrelated, 
+               SchedulerT, 
+               JsonInputHandler<Machine_Model::Unrelated>, 
+               FileOutputHandler<Machine_Model::Unrelated>, 
+               TickingTimer<Machine_Model::Unrelated>> simjobflow(config, 
+                                       std::make_unique<SchedulerT>(config), 
+                                       std::make_unique<JsonInputHandler<Machine_Model::Unrelated>>(config, json_job_path), 
+                                       std::make_unique<FileOutputHandler<Machine_Model::Unrelated>>(config, output_path), 
+                                       std::make_unique<TickingTimer<Machine_Model::Unrelated>>(config));
+                
+    try
+    {
+        simjobflow.start();
+    }
+    catch (const std::exception &e) 
+    {
+        std::cerr << "Caught an exception: " << e.what() << std::endl;
+    }
+}
+
+TEST(IntegrationTest, UnrelatedRealTimeBasicIntegration3) 
+{
+    NanoLog::setLogFile("./UnrelatedRealTimeBasicIntegration3.log");
+    NanoLog::setLogLevel(DEBUG);
+    using SchedulerT = GreedyScheduler<Machine_Model::Unrelated, Release_Model::Real_Time_Arrival>;
+
+    std::string json_config_path = "../../../assets/json/config/normal_config2.json";
+    std::string json_job_path = "../../../assets/json/job/unrelated_job3.json";
+    std::string output_path = "../../../assets/output/URrealtime_output3.log";
     json config = parseJsonFile(json_config_path);
 
     SimJobFlow<Machine_Model::Unrelated, 
