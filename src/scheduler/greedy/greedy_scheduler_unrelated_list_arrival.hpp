@@ -16,17 +16,17 @@
 
 namespace SJF
 {
-
+    
 using json = nlohmann::json;
 
 /**
- * @brief Greedy scheduler of Related machine_model, and list arrival release model.
+ * @brief Greedy scheduler of Unrelated machine_model, and list arrival release model.
  */
-class GreedySchedulerRelatedListArrival
+class GreedySchedulerUnrelatedListArrival
 {
 
 public:
-    GreedySchedulerRelatedListArrival(const json & config) {}
+    GreedySchedulerUnrelatedListArrival(const json & config) {}
 
     /**
      * @brief Initialize the machine state extended array and the machine state temp array
@@ -35,7 +35,7 @@ public:
      * machine state temp array is just used for selecting the machine to schedule the job
      * each time a jobs arrives
      */
-    void initialize(int64_t num_of_machines, const std::vector<RelatedMachine> & machines)
+    void initialize(int64_t num_of_machines, const std::vector<UnrelatedMachine> & machines)
     {
         assert(num_of_machines == machines.size());
         machine_state_extended_array_.resize(num_of_machines);
@@ -46,16 +46,16 @@ public:
      * @brief Schedule the jobs onto free machines and output schedule steps
      * 
      * @param jobs_for_this_turn It's assured that the jobs is sorted by the operator<, i.e.
-     *      bool operator<(const NormalJob & other) const
+     *      bool operator<(const UnrelatedJob & other) const
             {
                 return (timestamp_ < other.timestamp_) || (timestamp_ == other.timestamp_ && workload_ > other.workload_);
             }
      */
-    std::vector<ScheduleStep> schedule(const std::vector<NormalJob> & jobs_for_this_turn,
-                                       std::vector<RelatedMachine> & machines,
+    std::vector<ScheduleStep> schedule(const std::vector<UnrelatedJob> & jobs_for_this_turn,
+                                       std::vector<UnrelatedMachine> & machines,
                                        int64_t timestamp)
     {   
-        NANO_LOG(DEBUG, "[GreedySchedulerRelatedListArrival::schedule] Inside schedule");
+        NANO_LOG(DEBUG, "[GreedySchedulerUnrelatedListArrival::schedule] Inside schedule");
 
         std::vector<ScheduleStep> schedule_steps;
         size_t num_of_jobs = jobs_for_this_turn.size();
@@ -66,12 +66,12 @@ public:
 
         for(size_t i = 0; i < num_of_jobs; i++)
         {
-            const NormalJob & job = jobs_for_this_turn[i];
-            int64_t machineId = findSuitableMachine(job.workload_, machines);
+            const UnrelatedJob & job = jobs_for_this_turn[i];
+            int64_t machineId = findSuitableMachine(job.processing_time_);
             // findSuitableMachine will select the correct machine based on greedy
             MachineState & machine_state = machine_state_extended_array_[machineId];
-            RelatedMachine & machine = machines[machineId];
-            int64_t expected_job_running_time = (job.workload_ + machine.processing_speed_ - 1) / machine.processing_speed_;
+            UnrelatedMachine & machine = machines[machineId];
+            int64_t expected_job_running_time = job.processing_time_[machineId];
 
             NANO_LOG(DEBUG, "machine : \n%s", machine.toString().c_str());
             NANO_LOG(DEBUG, "machineState : \n%s", machine_state.toString().c_str());
@@ -87,18 +87,18 @@ public:
             else
             {
                 // the machine is busy, push back the job to the pending job list
-                machine_state.pending_jobs_.push_back(job);
+                machine_state.pending_jobs_.emplace_back(job, machineId);
             }
             machine_state.total_pending_time_ += expected_job_running_time;
             schedule_steps.emplace_back(timestamp, job.id_, machineId);
         }
 
-        NANO_LOG(DEBUG, "[GreedySchedulerRelatedListArrival::schedule] Outside schedule");
         NANO_LOG(DEBUG, "After schedule, printing the machine_state_extended_array");
         for(auto & machine_state : machine_state_extended_array_)
         {
             NANO_LOG(DEBUG, "%s", machine_state.toString().c_str());
         }
+        NANO_LOG(DEBUG, "[GreedySchedulerUnrelatedListArrival::schedule] Outside schedule");
 
         return schedule_steps;
     }
@@ -106,9 +106,9 @@ public:
     /**
      * @brief Modify the remaining time / total pending time of the busy machines
      */
-    void updateMachineState(std::vector<RelatedMachine> & machines, int64_t elapsing_time)
+    void updateMachineState(std::vector<UnrelatedMachine> & machines, int64_t elapsing_time)
     {
-        NANO_LOG(DEBUG, "[GreedySchedulerRelatedListArrival::updateMachineState] Inside updateMachineState");
+        NANO_LOG(DEBUG, "[GreedySchedulerUnrelatedListArrival::updateMachineState] Inside updateMachineState");
         NANO_LOG(DEBUG, "elapsing time : %ld", elapsing_time);
 
         bool done_flag = true;
@@ -145,7 +145,7 @@ public:
                     done_flag = false;
                     assert(machine_state.pending_jobs_.size() > 0);
                     auto & top_pending_job = machine_state.pending_jobs_.front();
-                    int64_t expected_job_running_time = (top_pending_job.workload_ + machine.processing_speed_ - 1) /machine.processing_speed_;
+                    int64_t expected_job_running_time = top_pending_job.processing_time_;
                     // We must consider the processing speed of the machine
                     machine.execute(top_pending_job.id_, expected_job_running_time);
                     machine_state.pending_jobs_.pop_front();
@@ -155,12 +155,12 @@ public:
         is_done_ = done_flag;
         // If there's no running job on any machine and no pending jobs, set is_done_ to true
 
-        NANO_LOG(DEBUG, "[GreedySchedulerRelatedListArrival::updateMachineState] Outside updateMachineState");
         NANO_LOG(DEBUG, "After updateMachineState, printing the machine_state_extended_array");
         for(auto & machine_state : machine_state_extended_array_)
         {
             NANO_LOG(DEBUG, "%s", machine_state.toString().c_str());
         }
+        NANO_LOG(DEBUG, "[GreedySchedulerUnrelatedListArrival::updateMachineState] Outside updateMachineState");
     }
 
     /**
@@ -174,6 +174,30 @@ public:
     }
 
 private:
+    struct UnrelatedJobNode
+    {
+        int64_t timestamp_;         // the timestamp when this job enters
+        int64_t processing_time_;
+            // In unrelated machine_model, each "machine, job" pair has different processing time
+            // And it's given in the job struct
+        int64_t id_;                // jobId, sorted by timestamp
+
+        UnrelatedJobNode(const UnrelatedJob & job, int64_t machineId)
+        : timestamp_(job.timestamp_), processing_time_(job.processing_time_[machineId]), id_(job.id_) {}
+
+        UnrelatedJobNode(const UnrelatedJobNode & other) = default;
+        UnrelatedJobNode(UnrelatedJobNode && other) = default;
+        UnrelatedJobNode & operator=(const UnrelatedJobNode & other) = default;
+        UnrelatedJobNode & operator=(UnrelatedJobNode && other) = default;
+
+        std::string toString() const
+        {
+            std::string result = "Id = " + std::to_string(id_) + ", timestamp = " + 
+            std::to_string(timestamp_) + "\nprocessing_time = " + std::to_string(processing_time_) + "\n";
+            return result;
+        }
+    };
+
     /**
      * @brief Extended information about the machine. Contains the total pending time and the pending job list.
      */
@@ -181,7 +205,7 @@ private:
     {
         int64_t total_pending_time_ = 0;    // remaining time of the current job is counted in this variable
         // for job i and machine j, the time to execute the job is workload_i / processing_speed_j
-        std::deque<NormalJob> pending_jobs_;
+        std::deque<UnrelatedJobNode> pending_jobs_;
 
         MachineState() = default;
         MachineState(const MachineState & other) = delete;
@@ -214,12 +238,11 @@ private:
     {
         int64_t machineId_;
         int64_t total_pending_time_ = 0;    // remaining time of the current job is counted in this variable
-        int64_t processing_speed_;
 
         MachineStateNode() = default;
 
-        MachineStateNode(int64_t machineId, int64_t total_pending_time, int64_t processing_speed) 
-            : machineId_(machineId), total_pending_time_(total_pending_time), processing_speed_(processing_speed) {}
+        MachineStateNode(int64_t machineId, int64_t total_pending_time) 
+            : machineId_(machineId), total_pending_time_(total_pending_time) {}
         MachineStateNode(const MachineStateNode & other) = default;
         MachineStateNode(MachineStateNode && other) = default;
         MachineStateNode & operator=(const MachineStateNode & other) = default;
@@ -227,11 +250,7 @@ private:
 
         bool operator<(const MachineStateNode & other) const
         {
-            if(total_pending_time_ != other.total_pending_time_)
-            {
-                return total_pending_time_ < other.total_pending_time_;
-            }
-            return processing_speed_ < other.processing_speed_;
+            return total_pending_time_ < other.total_pending_time_;
         }
 
         bool isFree() const
@@ -244,7 +263,6 @@ private:
             std::stringstream ss;
             ss << "machineId : " << machineId_ << "\n";
             ss << "total_pending_time : " << total_pending_time_ << "\n";
-            ss << "processing_speed : " << processing_speed_ << "\n";
             return ss.str();
         }
     };    
@@ -259,25 +277,18 @@ private:
     /**
      * @brief Fill the machine state temp array, and use std::min_element to get the most suitable element in O(n) time.
      */
-    int64_t findSuitableMachine(int64_t workload, const std::vector<RelatedMachine> & machines)
+    int64_t findSuitableMachine(const std::vector<int64_t> & processing_time)
     {
         for(size_t i = 0; i < machine_state_extended_array_.size(); i++)
         {
-            auto & machine = machines[i];
             machine_state_temp_array_[i] = std::move(MachineStateNode(i, 
-                machine_state_extended_array_[i].total_pending_time_ + 
-                (workload + machine.processing_speed_ - 1) / machine.processing_speed_,
-                machine.processing_speed_));
+                machine_state_extended_array_[i].total_pending_time_ + processing_time[i]));
         }
 
-        // DEBUGING
-        #ifdef DEBUG_SCHED_RL_LIST
-            std::cout << "Inside findSuitableMachine. The min element in machne state temp array is : \n";
-            std::cout << std::min_element(machine_state_temp_array_.begin(), machine_state_temp_array_.end()) -> toString() << "\n";
-        #endif
-        // DEBUGING
+        NANO_LOG(DEBUG, "Inside findSuitableMachine. The min element in machne state temp array is : \n%s",
+                 std::min_element(machine_state_temp_array_.begin(), machine_state_temp_array_.end())->toString().c_str());
 
-        return std::min_element(machine_state_temp_array_.begin(), machine_state_temp_array_.end()) -> machineId_;
+        return std::min_element(machine_state_temp_array_.begin(), machine_state_temp_array_.end())->machineId_;
     }
 };
 

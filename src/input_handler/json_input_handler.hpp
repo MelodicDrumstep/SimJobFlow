@@ -11,14 +11,10 @@
 #include <nlohmann/json.hpp>
 
 #include "json_parser.hpp"
-#include "job.hpp"
-#include "exceptions_in_one_header.hpp"
-#include "model_trait.hpp"
+#include "basic_utils_in_one_header.hpp"
 
 namespace SJF
 {
-
-#define DEBUG_JSON_INPUT
 
 using json = nlohmann::json;
 
@@ -77,15 +73,11 @@ using JobT = typename MachineModelTraits<machine_model>::JobT;
             job_array_[i].id_ = i;
         }
 
-        // DEBUGING
-        #ifdef DEBUG_JSON_INPUT
-            std::cout << "Inside JsonInputHandler::Constructor\n";
-            for(auto & job : job_array_)
-            {
-                std::cout << job.toString() << std::endl;
-            }
-        #endif
-        // DEBUGING
+        NANO_LOG(DEBUG, "[JsonInputHandler::Constructor] printing the job array : ");
+        for(auto & job : job_array_)
+        {
+            NANO_LOG(DEBUG, "%s", job.toString().c_str());
+        }
     }
 
     /**
@@ -104,7 +96,7 @@ using JobT = typename MachineModelTraits<machine_model>::JobT;
      * @brief Get the jobs for this turn. It will check the tail_index_ and the timestamp
      * and fill in the job array.
      */
-    std::optional<std::vector<JobT>> getJobs(int64_t timestamp)
+    std::vector<JobT> getJobs(int64_t timestamp)
     {
         std::vector<JobT> jobs;
         while((tail_index_ < job_array_.size()) && (timestamp >= job_array_[tail_index_].timestamp_))
@@ -115,17 +107,14 @@ using JobT = typename MachineModelTraits<machine_model>::JobT;
         }
         if(jobs.empty())
         {
-            return std::nullopt;
+            return jobs;
         }
-        // DEBUGING
-        #ifdef DEBUG_JSON_INPUT
-            std::cout << "Inside JsonInputHandler::getJobs\n";
-            for(auto & job : jobs)
-            {
-                std::cout << job.toString() << std::endl;
-            }
-        #endif
-        // DEBUGING
+
+        NANO_LOG(DEBUG, "[JsonInputHandler::getJobs] printing the job array : ");
+        for(auto & job : job_array_)
+        {
+            NANO_LOG(DEBUG, "[JsonInputHandler::getJobs] %s", job.toString().c_str());
+        }
 
         return jobs;
     }

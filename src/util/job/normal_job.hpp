@@ -35,7 +35,7 @@ struct NormalJob
 
     std::string toString() const
     {
-        return "Id = " + std::to_string(id_) + ", timestamp = " + std::to_string(timestamp_) + " workload = " + std::to_string(workload_);
+        return "jobId : " + std::to_string(id_) + ", timestamp : " + std::to_string(timestamp_) + " workload : " + std::to_string(workload_);
     }
 };
 

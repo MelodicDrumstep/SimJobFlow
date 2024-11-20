@@ -3,9 +3,9 @@
 #include <concepts>
 #include <iostream>
 #include <type_traits>
-#include <model_trait.hpp>
 #include <vector>
-#include <schedule_step.hpp>
+
+#include "basic_utils_in_one_header.hpp"
 
 namespace SJF
 {
@@ -22,7 +22,7 @@ concept Scheduler = requires(SchedulerT scheduler,
                              int64_t elapsing_time)
 {
     { scheduler.schedule(jobs_for_this_turn, machines, timestamp) } -> std::same_as<std::vector<ScheduleStep>>;
-    { scheduler.initialize(num_of_machines) } -> std::same_as<void>;
+    { scheduler.initialize(num_of_machines, std::as_const(machines)) } -> std::same_as<void>;
     { scheduler.updateMachineState(machines, elapsing_time) } -> std::same_as<void>;
     { scheduler.done() } -> std::same_as<bool>;
 };

@@ -9,18 +9,15 @@
 #include <string_view>
 #include <nlohmann/json.hpp>
 
-#include "model.hpp"
-#include "objective.hpp"
 #include "timer_trait.hpp"
 #include "input_handler_trait.hpp"
 #include "output_handler_trait.hpp"
 #include "scheduler_trait.hpp"
-#include "schedule_step.hpp"
+
+#include "basic_utils_in_one_header.hpp"
 
 namespace SJF
 {
-
-#define DEBUG_SJF
 
 using json = nlohmann::json;
 
@@ -74,25 +71,25 @@ public:
     {
         input_handler_ -> checkValidity(num_of_machines_); 
         // checkValidity will check if the number of machines matches will the configuration there.
-        scheduler_ -> initialize(num_of_machines_);
         initializeMachines(config);
+        scheduler_ -> initialize(num_of_machines_, machines_);
     }
 
     void start()
     {
         while((!input_handler_ -> done()) || (!scheduler_ -> done()))   
         {
+            NANO_LOG(DEBUG, "[SimJobFlow::start] Inside the while loop");
+
             auto timestamp = timer_ -> timestamp(); // get the current timestamp
-            std::optional<std::vector<JobT>> jobs_for_this_turn = input_handler_ -> getJobs(timestamp);
+            std::vector<JobT> jobs_for_this_turn = input_handler_ -> getJobs(timestamp);
             // get the input jobs
+            
             std::vector<ScheduleStep> schedule_steps;
-            if(jobs_for_this_turn.has_value())
-            {
-                // If there are some input jobs for this turn, pass them to the scheduler
-                schedule_steps = scheduler_ -> schedule(*jobs_for_this_turn, machines_, timestamp);
-                jobs_.insert(jobs_.end(), jobs_for_this_turn -> begin(), jobs_for_this_turn -> end());
-                // The scheduler may schedule the jobs to some machines, and fill in the schedule steps
-            }
+            schedule_steps = scheduler_ -> schedule(jobs_for_this_turn, machines_, timestamp);
+            jobs_.insert(jobs_.end(), jobs_for_this_turn.begin(), jobs_for_this_turn.end());
+            // The scheduler may schedule the jobs to some machines, and fill in the schedule steps
+
             output_handler_ -> output(machines_, jobs_, timestamp, schedule_steps); // output the scheduler steps
             scheduler_ -> updateMachineState(machines_, timer_ -> tick(machines_));
             // Scheduler is responsible for update the machine state, e.g, remaining time of the machine.
@@ -114,12 +111,8 @@ private:
      * @brief Initialize the machine array.
      */
     void initializeMachines(const json & config)
-    {
-        // DEBUGING
-        #ifdef DEBUG_SJF
-            std::cout << "[SimJobFlow::initializeMachines]\n";
-        #endif
-        // DEBUGING   
+    {  
+        NANO_LOG(DEBUG, "[SimJobFlow::initializeMachines]");
 
         machines_.reserve(num_of_machines_);
         if constexpr (machine_model == Machine_Model::Related)

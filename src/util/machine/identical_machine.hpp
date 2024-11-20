@@ -43,9 +43,9 @@ struct IdenticalMachine
 
     std::string toString() const
     { 
-        std::string result = "Machine : " + std::to_string(machineId_) + "\n";
-        result += "Job : " + std::to_string(jobId_) + "\n";
-        result += "Remaining Time : " + std::to_string(remaining_time_) + "\n";
+        std::string result = "machineId : " + std::to_string(machineId_) +
+        ", jobId : " + std::to_string(jobId_) + 
+        ", remaining Time : " + std::to_string(remaining_time_);
         return result;
     }
 

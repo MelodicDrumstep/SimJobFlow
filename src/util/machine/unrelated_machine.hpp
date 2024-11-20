@@ -21,17 +21,30 @@ struct UnrelatedMachine
 
     UnrelatedMachine(int32_t machineId) : machineId_(machineId) {}
 
+    bool isFree() const
+    {
+        assert(((jobId_ == Invalid_Job_Id) && (remaining_time_ == Invalid_Remaining_Time)) || 
+               ((jobId_ != Invalid_Job_Id) && (remaining_time_ != Invalid_Remaining_Time)));
+        return (jobId_ == Invalid_Job_Id);
+    }
+
     void setFree()
     {
         jobId_ = Invalid_Job_Id;
         remaining_time_ = Invalid_Remaining_Time;
     }
 
+    void execute(int64_t job_id, int64_t remaining_time)
+    {
+        jobId_ = job_id;
+        remaining_time_ = remaining_time;
+    }
+
     std::string toString() const
     {
-        std::string result = "Machine : " + std::to_string(machineId_) + "\n";
-        result += "Job : " + std::to_string(jobId_) + "\n";
-        result += "Remaining Time : " + std::to_string(remaining_time_) + "\n";
+        std::string result = "machineId : " + std::to_string(machineId_) +
+        ", jobId : " + std::to_string(jobId_) + 
+        ", remaining Time : " + std::to_string(remaining_time_);
         return result;
     }   
 

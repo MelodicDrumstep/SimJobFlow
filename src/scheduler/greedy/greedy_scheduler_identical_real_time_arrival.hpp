@@ -7,15 +7,11 @@
 #include <nlohmann/json.hpp>
 #include <iostream>
 
-#include "model_trait.hpp"
-#include "schedule_step.hpp"
-#include "job.hpp"
-#include "machine.hpp"
+#include "basic_utils_in_one_header.hpp"
+#include "NanoLogCpp17.h"
 
 namespace SJF
 {
-
-#define DEBUG_SCHED_ID
 
 using json = nlohmann::json;
 
@@ -33,8 +29,9 @@ public:
     /**
      * @brief Initialize the machine_free_list
      */
-    void initialize(int64_t num_of_machines)
+    void initialize(int64_t num_of_machines, const std::vector<IdenticalMachine> & machines)
     {
+        assert(num_of_machines == machines.size());
         machine_free_list_.reserve(num_of_machines);
         for(size_t i = 0; i < num_of_machines; i++)
         {
@@ -49,11 +46,7 @@ public:
                                        std::vector<IdenticalMachine> & machines,
                                        int64_t timestamp)
     {   
-        // DEBUGING
-        #ifdef DEBUG_SCHED_ID
-            std::cout << "Inside GreedySchedulerIdentical::schedule()\n";
-        #endif
-        // DEBUGING
+        NANO_LOG(DEBUG, "[GreedySchedulerIdenticalRealTimeArrival::schedule] Inside schedule");
 
         // push the newly coming jobs into the job heap
         // (We have to consider the new jobs along with the accmulated jobs together)
@@ -61,18 +54,14 @@ public:
         {
             accumulated_jobs_.push(job);
 
-            // DEBUGING
-            #ifdef DEBUG_SCHED_ID
-                std::cout << job.toString() << std::endl;
-                std::cout << "Jobs : \n";
-                auto job_array = jobHeap2Vector();
-                for(auto & job_for_printing : job_array)
-                {
-                    std::cout << job_for_printing.toString() << std::endl;
-                }
-                std::cout << std::endl;
-            #endif
-            // DEBUGING
+            NANO_LOG(DEBUG, "%s", job.toString().c_str());
+            NANO_LOG(DEBUG, "Jobs : ");
+            auto job_array = jobHeap2Vector();
+            for(auto & job_for_printing : job_array)
+            {
+                NANO_LOG(DEBUG, "%s", job_for_printing.toString().c_str());
+            }
+            NANO_LOG(DEBUG, "\n");
         }
         if(machine_free_list_.empty())
         {
@@ -81,21 +70,20 @@ public:
         std::vector<ScheduleStep> schedule_steps;
         while((!machine_free_list_.empty()) && (!accumulated_jobs_.empty()))
         {
+            NANO_LOG(DEBUG, "Inside schedule while loop");
+
             // when there's free machine and remaining jobs, we can schedule the job at the top of the heap onto any machine
             const NormalJob & current_job = accumulated_jobs_.top();
             int64_t machine_id = machine_free_list_.back();
-            machine_free_list_.pop_back();
             machines[machine_id].execute(current_job.id_, current_job.workload_);
             schedule_steps.emplace_back(timestamp, current_job.id_, machine_id);
+            NANO_LOG(DEBUG, "current_job_id is %ld, and machine_id is %ld", current_job.id_, machine_id);
+            NANO_LOG(DEBUG, "current job : %s", current_job.toString().c_str());
+            machine_free_list_.pop_back();
             accumulated_jobs_.pop();
-
-            // DEBUGING
-            #ifdef DEBUG_SCHED_ID
-                std::cout << "current_job_id is " << current_job.id_ << ", and machine_id is " << machine_id << std::endl;
-                std::cout << "current job :" << current_job.toString() << std::endl;
-            #endif
-            // DEBUGING
         }
+
+        NANO_LOG(DEBUG, "[GreedySchedulerIdenticalRealTimeArrival::schedule] Outside schedule");
         return schedule_steps;
     }
 
@@ -105,10 +93,13 @@ public:
      */
     void updateMachineState(std::vector<IdenticalMachine> & machines, int64_t elapsing_time)
     {
+        NANO_LOG(DEBUG, "[GreedySchedulerIdenticalRealTimeArrival::updateMachineState] Inside updateMachineState");
+        NANO_LOG(DEBUG, "elapsing time : %ld", elapsing_time);
+
+        bool done_flag = accumulated_jobs_.empty();
         for(size_t i = 0; i < machines.size(); i++)
         {
             auto & machine = machines[i];
-            bool done_flag = true;
             if(machine.remaining_time_ != Invalid_Remaining_Time)
             {
                 done_flag = false;
@@ -117,11 +108,14 @@ public:
                 {
                     machine.setFree();
                     machine_free_list_.push_back(i);
+                    NANO_LOG(DEBUG, "machines[%ld] is free now. Add it to the free list.", i);
                 }
             }
-            is_done_ = done_flag;
-            // If there's no running job on any machine, set is_done_ to true
         }
+        is_done_ = done_flag;
+        // If there's no running job on any machine, set is_done_ to true
+
+        NANO_LOG(DEBUG, "[GreedySchedulerIdenticalRealTimeArrival::updateMachineState] Outside updateMachineState");
     }
 
     /**
@@ -160,12 +154,7 @@ private:
         std::vector<NormalJob> jobs;
         while(!accumulated_jobs_.empty())
         {
-            // DEBUGING
-            #ifdef DEBUG_SCHED_ID
-                std::cout << "heap size is " << accumulated_jobs_.size() << std::endl;
-            #endif
-            // DEBUGING
-
+            NANO_LOG(DEBUG, "heap size is %ld", accumulated_jobs_.size());
             jobs.push_back(accumulated_jobs_.top());
             accumulated_jobs_.pop();
         }

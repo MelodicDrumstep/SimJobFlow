@@ -37,11 +37,14 @@ struct UnrelatedJob
 
     std::string toString() const
     {
-        std::string result = "Id = " + std::to_string(id_) + ", timestamp = " + std::to_string(timestamp_) + "\nprocessing_time = \n";
+        std::string result = "jobId : " + std::to_string(id_) + ", timestamp : " + std::to_string(timestamp_) + ", processing_time : [";
         for (const auto & speed : processing_time_)
         {
-            result += " " + std::to_string(speed);
+            result += std::to_string(speed) + ", ";
         }
+        result.pop_back();
+        result.pop_back();
+        result += ']';
         return result;
     }
 };

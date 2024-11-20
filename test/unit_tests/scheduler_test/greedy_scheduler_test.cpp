@@ -3,16 +3,17 @@
 #include <nlohmann/json.hpp>
 
 #include "greedy_scheduler.hpp"
-#include "model_trait.hpp"
+
+#include "basic_utils_in_one_header.hpp"
 
 using namespace SJF;
 
 using json = nlohmann::json;
 
-#define DEBUG_GREEDY_SCHED_TEST
-
 TEST(GreedySchedulerTest, BasicOperations) 
 {
+    NanoLog::setLogFile("./BasicOperations.log");
+    NanoLog::setLogLevel(DEBUG);
     constexpr int64_t num_of_machines = 2;
     std::vector<IdenticalMachine> machines(num_of_machines);
     for(int i = 0; i < num_of_machines; i++)
@@ -22,7 +23,7 @@ TEST(GreedySchedulerTest, BasicOperations)
 
     json config;
     GreedyScheduler<Machine_Model::Identical, Release_Model::Real_Time_Arrival> sched(config);
-    sched.initialize(num_of_machines);
+    sched.initialize(num_of_machines, machines);
 
     std::vector<NormalJob> jobs_for_this_turn;
     for(int i = 0; i < num_of_machines; i++)
@@ -33,15 +34,11 @@ TEST(GreedySchedulerTest, BasicOperations)
 
     EXPECT_EQ(schedule_steps1.size(), 2);
 
-    // DEBUGING
-    #ifdef DEBUG_GREEDY_SCHED_TEST
-        for(int i = 0; i < schedule_steps1.size(); i++)
-        {
-            std::cout << "schedule step [" << i << "]\n";
-            std::cout << schedule_steps1[i].toString() << "\n";
-        }
-    #endif  
-    // DEBUGING
+    NANO_LOG(DEBUG, "[GreedySchedulerTest::BasicOperations], printing the schedule steps:");
+    for(int i = 0; i < schedule_steps1.size(); i++)
+    {
+        NANO_LOG(DEBUG, "schedule step [%d] : %s", i, schedule_steps1[i].toString().c_str());
+    }
 
     EXPECT_EQ(machines[0].remaining_time_, 4);
     EXPECT_EQ(machines[1].remaining_time_, 4);
@@ -74,14 +71,10 @@ TEST(GreedySchedulerTest, BasicOperations)
     std::vector<ScheduleStep> schedule_steps3 = sched.schedule(jobs_for_this_turn, machines, 4);
     EXPECT_EQ(schedule_steps3.size(), 1);
 
-    // DEBUGING
-    #ifdef DEBUG_GREEDY_SCHED_TEST
-        for(int i = 0; i < schedule_steps3.size(); i++)
-        {
-            std::cout << "schedule steps[" << i << "]\n";
-            std::cout << schedule_steps3[i].toString() << "\n";
-        }
-    #endif  
-    // DEBUGING
+    NANO_LOG(DEBUG, "[GreedySchedulerTest::BasicOperations], printing the schedule steps:");
+    for(int i = 0; i < schedule_steps1.size(); i++)
+    {
+        NANO_LOG(DEBUG, "schedule step [%d] : %s", i, schedule_steps3[i].toString().c_str());
+    }
 
 }

@@ -9,3 +9,6 @@ third_party/
 
 # ignore vscode configuration directory
 .vscode/
+
+# ignore NanoLog files
+**/decompresser

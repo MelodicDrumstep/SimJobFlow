@@ -6,7 +6,6 @@
 #include <queue>
 #include <nlohmann/json.hpp>
 #include <iostream>
-
 #include "basic_utils_in_one_header.hpp"
 #include "NanoLogCpp17.h"
 
@@ -18,18 +17,18 @@ using json = nlohmann::json;
 /**
  * @brief Greedy scheduler of Identical machine_model, and real time arrival release model.
  */
-class GreedySchedulerRelatedRealTimeArrival
+class GreedySchedulerUnrelatedRealTimeArrival
 {
 // JobHeap is a heap with a compare function based on the workload of the job
 using JobHeap = std::priority_queue<NormalJob, std::vector<NormalJob>, NormalJobWorkloadCmp>;
 
 public:
-    GreedySchedulerRelatedRealTimeArrival(const json & config)  {}
+    GreedySchedulerUnrelatedRealTimeArrival(const json & config)  {}
 
     /**
      * @brief Initialize the machine_free_list
      */
-    void initialize(int64_t num_of_machines, const std::vector<RelatedMachine> & machines)
+    void initialize(int64_t num_of_machines, const std::vector<UnrelatedMachine> & machines)
     {
         assert(num_of_machines == machines.size());
         for(size_t i = 0; i < num_of_machines; i++)
@@ -42,10 +41,10 @@ public:
      * @brief Schedule the jobs onto free machines and output schedule steps
      */
     std::vector<ScheduleStep> schedule(const std::vector<NormalJob> & jobs_for_this_turn,
-                                       std::vector<RelatedMachine> & machines,
+                                       std::vector<UnrelatedMachine> & machines,
                                        int64_t timestamp)
     {   
-        NANO_LOG(DEBUG, "[GreedySchedulerRelatedRealTimeArrival::schedule] Inside schedule");
+        NANO_LOG(DEBUG, "[GreedySchedulerUnrelatedRealTimeArrival::schedule] Inside schedule");
 
         // push the newly coming jobs into the job heap
         // (We have to consider the new jobs along with the accmulated jobs together)
@@ -53,6 +52,7 @@ public:
         {
             accumulated_jobs_.push(job);
 
+            // DEBUGING
             NANO_LOG(DEBUG, "%s", job.toString().c_str());
             NANO_LOG(DEBUG, "Jobs : ");
             auto job_array = jobHeap2Vector();
@@ -62,16 +62,10 @@ public:
             }
             NANO_LOG(DEBUG, "\n");
         }
-
-        NANO_LOG(DEBUG, "machine_free_heap_ is %s", machine_free_heap_.empty() ? "empty" : "not empty");
-        NANO_LOG(DEBUG, "accumulated_jobs_ is %s", accumulated_jobs_.empty() ? "empty" : "not empty");
-
         if(machine_free_heap_.empty())
         {
-            NANO_LOG(DEBUG, "machine_free_heap_ is empty");
             return {};
         }
-
         std::vector<ScheduleStep> schedule_steps;
         while((!machine_free_heap_.empty()) && (!accumulated_jobs_.empty()))
         {
@@ -82,15 +76,14 @@ public:
             int64_t processing_speed = machine_state_node.processing_speed_;
             machines[machine_id].execute(current_job.id_, (current_job.workload_ + processing_speed - 1) / processing_speed);
             schedule_steps.emplace_back(timestamp, current_job.id_, machine_id);
-
-            NANO_LOG(DEBUG, "current_job_id is %ld, and machine_id is %ld", current_job.id_, machine_id);
-            NANO_LOG(DEBUG, "current job : %s", current_job.toString().c_str());
-
             machine_free_heap_.pop();
             accumulated_jobs_.pop();
+            
+            NANO_LOG(DEBUG, "current_job_id is %ld, machine_id is %ld", current_job.id_, machine_id);
+            NANO_LOG(DEBUG, "current job : %s", current_job.toString().c_str());
         }
 
-        NANO_LOG(DEBUG, "[GreedySchedulerRelatedRealTimeArrival::schedule] Outside schedule");
+        NANO_LOG(DEBUG, "[GreedySchedulerUnrelatedRealTimeArrival::schedule] outside schedule");
         return schedule_steps;
     }
 
@@ -98,15 +91,16 @@ public:
      * @brief Modify the remaining time of the busy machines and add the machines that has done their job
      * to the machine free list 
      */
-    void updateMachineState(std::vector<RelatedMachine> & machines, int64_t elapsing_time)
+    void updateMachineState(std::vector<UnrelatedMachine> & machines, int64_t elapsing_time)
     {
-        NANO_LOG(DEBUG, "[GreedySchedulerRelatedRealTimeArrival::updateMachineState] Inside updateMachineState");
+        NANO_LOG(DEBUG, "[GreedySchedulerUnrelatedRealTimeArrival::updateMachineState] Inside updateMachineState");
         NANO_LOG(DEBUG, "elapsing time : %ld", elapsing_time);
         NANO_LOG(DEBUG, "Printing the machines : ");
         for(auto & machine : machines)
         {
             NANO_LOG(DEBUG, "%s", machine.toString().c_str());
         }
+        NANO_LOG(DEBUG, "\n");
 
         NANO_LOG(DEBUG, "Printing the machine_free_heap_");
         NANO_LOG(DEBUG, "machine_free_heap_.size() is %ld", machine_free_heap_.size());
@@ -114,9 +108,10 @@ public:
         while(!temp_heap1.empty())
         {
             auto & node = temp_heap1.top();
-            NANO_LOG(DEBUG, "%s", node.toString().c_str());
             temp_heap1.pop();
+            NANO_LOG(DEBUG, "%s", node.toString().c_str());
         }
+        NANO_LOG(DEBUG, "\n");
 
         NANO_LOG(DEBUG, "Printing the accumulated_jobs_");
         NANO_LOG(DEBUG, "accumulated_jobs_.size() is %ld", accumulated_jobs_.size());
@@ -124,9 +119,10 @@ public:
         while(!temp_heap2.empty())
         {
             auto & job = temp_heap2.top();
-            NANO_LOG(DEBUG, "%s", job.toString().c_str());
             temp_heap2.pop();
+            NANO_LOG(DEBUG, "%s", job.toString().c_str());
         }
+        NANO_LOG(DEBUG, "\n");
 
         bool done_flag = accumulated_jobs_.empty();
         for(size_t i = 0; i < machines.size(); i++)
@@ -140,23 +136,13 @@ public:
                 {
                     machine.setFree();
                     machine_free_heap_.emplace(i, machines[i].processing_speed_);
-                    NANO_LOG(DEBUG, "machines[%ld] is free now. processing speed is %ld. Add it to the free heap.", i, machines[i].processing_speed_);
-                    NANO_LOG(DEBUG, "Printing the machine_free_heap_");
-                    NANO_LOG(DEBUG, "machine_free_heap_.size() is %ld", machine_free_heap_.size());
-                    auto temp_heap1 = machine_free_heap_;
-                    while(!temp_heap1.empty())
-                    {
-                        auto & node = temp_heap1.top();
-                        NANO_LOG(DEBUG, "%s", node.toString().c_str());
-                        temp_heap1.pop();
-                    }
                 }
             }
         }
         is_done_ = done_flag;
         // If there's no running job on any machine, set is_done_ to true
 
-        NANO_LOG(DEBUG, "[GreedySchedulerRelatedRealTimeArrival::updateMachineState] Outside updateMachineState");
+        NANO_LOG(DEBUG, "[GreedySchedulerUnrelatedRealTimeArrival::updateMachineState] Outside updateMachineState");
     }
 
     /**
@@ -222,6 +208,7 @@ private:
         while(!accumulated_jobs_.empty())
         {
             NANO_LOG(DEBUG, "heap size is %ld", accumulated_jobs_.size());
+
             jobs.push_back(accumulated_jobs_.top());
             accumulated_jobs_.pop();
         }

@@ -2,8 +2,7 @@
 
 #include <vector>
 
-#include "model_trait.hpp"
-#include "schedule_step.hpp"
+#include "basic_utils_in_one_header.hpp"
 
 namespace SJF
 {
