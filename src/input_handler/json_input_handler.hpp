@@ -137,6 +137,22 @@ using JobT = typename MachineModelTraits<machine_model>::JobT;
         return job_array_;
     }
 
+    // The struct and functions about rolling back is for OPT solver 
+    // to enumrate the answers
+    struct RollBackPoint
+    {
+        size_t tail_index;
+    };
+
+    RollBackPoint getRollBackPoint() const
+    {
+        return {tail_index_};
+    }
+    
+    void rollback(RollBackPoint roll_back_point)
+    {
+        tail_index_ = roll_back_point.tail_index;
+    }
 private:
     std::string job_type_;      
     int64_t num_of_machines_;

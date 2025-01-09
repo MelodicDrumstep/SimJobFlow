@@ -108,26 +108,6 @@ public:
             NANO_LOG(DEBUG, "%s", machine.toString().c_str());
         }
 
-        NANO_LOG(DEBUG, "Printing the machine_free_heap_");
-        NANO_LOG(DEBUG, "machine_free_heap_.size() is %ld", machine_free_heap_.size());
-        auto temp_heap1 = machine_free_heap_;
-        while(!temp_heap1.empty())
-        {
-            auto & node = temp_heap1.top();
-            NANO_LOG(DEBUG, "%s", node.toString().c_str());
-            temp_heap1.pop();
-        }
-
-        NANO_LOG(DEBUG, "Printing the accumulated_jobs_");
-        NANO_LOG(DEBUG, "accumulated_jobs_.size() is %ld", accumulated_jobs_.size());
-        auto temp_heap2 = accumulated_jobs_;
-        while(!temp_heap2.empty())
-        {
-            auto & job = temp_heap2.top();
-            NANO_LOG(DEBUG, "%s", job.toString().c_str());
-            temp_heap2.pop();
-        }
-
         bool done_flag = accumulated_jobs_.empty();
         for(size_t i = 0; i < machines.size(); i++)
         {

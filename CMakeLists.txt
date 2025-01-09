@@ -12,6 +12,7 @@ include_directories(${CMAKE_SOURCE_DIR}/third_party/json/include)
 # Add src directory and its subdirectories to include path
 include_directories(${CMAKE_SOURCE_DIR}/src/input_handler)
 include_directories(${CMAKE_SOURCE_DIR}/src/scheduler)
+include_directories(${CMAKE_SOURCE_DIR}/src/OPT_solver)
 include_directories(${CMAKE_SOURCE_DIR}/src/scheduler/greedy)
 include_directories(${CMAKE_SOURCE_DIR}/src/timer)
 include_directories(${CMAKE_SOURCE_DIR}/src/visualization)
@@ -24,5 +25,6 @@ include_directories(${CMAKE_SOURCE_DIR}/src/util/model)
 include_directories(${CMAKE_SOURCE_DIR}/src/util/objective)
 include_directories(${CMAKE_SOURCE_DIR}/src/util/exception)
 
-# Add subdirectoriesa
+# Add subdirectories
 add_subdirectory(test)
+add_subdirectory(app)

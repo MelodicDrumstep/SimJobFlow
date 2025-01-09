@@ -22,13 +22,11 @@ TEST(JsonInputHandlerTest, ConstructorAndGetJobs1)
 
     // Test getJobs method
     auto jobs = handler.getJobs(0);
-    ASSERT_TRUE(jobs.has_value());
     EXPECT_EQ(jobs.size(), 1);
     EXPECT_EQ(jobs.at(0).timestamp_, 0);
     EXPECT_EQ(jobs.at(0).workload_, 2);
 
     jobs = handler.getJobs(1);
-    ASSERT_TRUE(jobs.has_value());
     EXPECT_EQ(jobs.size(), 1);
     EXPECT_EQ(jobs.at(0).timestamp_, 1);
     EXPECT_EQ(jobs.at(0).workload_, 2);
@@ -55,21 +53,18 @@ TEST(JsonInputHandlerTest, ConstructorAndGetJobs2)
 
     // Test getJobs method
     auto jobs = handler.getJobs(0);
-    ASSERT_TRUE(jobs.has_value());
     EXPECT_EQ(jobs.size(), 1);
     EXPECT_EQ(jobs.at(0).timestamp_, 0);
     EXPECT_EQ(jobs.at(0).workload_, 3);
     EXPECT_FALSE(handler.done());
 
     jobs = handler.getJobs(1);
-    ASSERT_TRUE(jobs.has_value());
     EXPECT_EQ(jobs.size(), 1);
     EXPECT_EQ(jobs.at(0).timestamp_, 1);
     EXPECT_EQ(jobs.at(0).workload_, 2);
     EXPECT_FALSE(handler.done());
 
     jobs = handler.getJobs(3);
-    ASSERT_TRUE(jobs.has_value());
     EXPECT_EQ(jobs.size(), 3);
     EXPECT_EQ(jobs.at(0).timestamp_, 2);
     EXPECT_EQ(jobs.at(0).workload_, 5);
@@ -100,7 +95,6 @@ TEST(JsonInputHandlerTest, UnrelatedConstructorAndGetJobs1)
 
     // Test getJobs method
     auto jobs = handler.getJobs(0);
-    ASSERT_TRUE(jobs.has_value());
     EXPECT_EQ(jobs.size(), 1);
     EXPECT_EQ(jobs.at(0).timestamp_, 0);
     EXPECT_EQ(jobs.at(0).processing_time_.size(), 2);
@@ -109,7 +103,6 @@ TEST(JsonInputHandlerTest, UnrelatedConstructorAndGetJobs1)
     EXPECT_FALSE(handler.done());
 
     jobs = handler.getJobs(3);
-    ASSERT_TRUE(jobs.has_value());
     EXPECT_EQ(jobs.size(), 2);
     EXPECT_EQ(jobs.at(0).timestamp_, 1);
     EXPECT_EQ(jobs.at(0).processing_time_.size(), 2);

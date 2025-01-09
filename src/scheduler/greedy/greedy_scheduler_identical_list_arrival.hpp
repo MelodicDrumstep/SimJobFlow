@@ -12,7 +12,6 @@
 #include <sstream>
 
 #include "basic_utils_in_one_header.hpp"
-#include "NanoLogCpp17.h"
 
 namespace SJF
 {
@@ -69,22 +68,6 @@ public:
 
         fillMachineStateHeap();
         // It will copy the content from machine state array to machine state heap and heapify it
-
-        NANO_LOG(DEBUG, "Printing the machines : ");
-        for(auto & machine : machines)
-        {
-            NANO_LOG(DEBUG, "%s", machine.toString().c_str());
-        }
-        NANO_LOG(DEBUG, "Printing the machine extended array : ");
-        for(auto & machine : machine_state_extended_array_)
-        {
-            NANO_LOG(DEBUG, "%s", machine.toString().c_str());
-        }
-        NANO_LOG(DEBUG, "Printing the machine state heap : ");
-        for(auto & machine : machine_state_heap_)
-        {
-            NANO_LOG(DEBUG, "%s", machine.toString().c_str());
-        }
 
         for(size_t i = 0; i < num_of_jobs; i++)
         {

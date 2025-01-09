@@ -99,7 +99,6 @@ public:
             // This task is given to the scheduler rather than the timer is because the scheduler 
             // can update some inner data structures at the same time.
         }
-
         output_handler_ -> output(timer_ -> timestamp());
     }
 
