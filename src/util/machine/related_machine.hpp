@@ -23,6 +23,9 @@ struct RelatedMachine
     RelatedMachine(int64_t machineId, int64_t processing_speed)
      : machineId_(machineId), processing_speed_(processing_speed) {}
 
+    bool operator==(const RelatedMachine& other) const = default;
+    bool operator!=(const RelatedMachine& other) const = default;
+
     bool isFree() const
     {
         assert(((jobId_ == Invalid_Job_Id) && (remaining_time_ == Invalid_Remaining_Time)) || 

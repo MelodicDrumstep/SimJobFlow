@@ -57,6 +57,17 @@ public:
         output_file_ << "SnapShot :\n" <<  toSnapShot<MachineT>(machines) << "\n\n";
     }
 
+    void output(const std::vector<MachineT> & machines,
+                const std::vector<JobT> & jobs,
+                const std::vector<ScheduleStep> & schedule_steps)
+    {
+        for(auto & step : schedule_steps)
+        {
+            output_file_ << "Job : " << jobs[step.jobId_].toString() << "\n";
+            output_file_ << "Machine : " << machines[step.machineId_].toString() << "\n";
+        }
+    }
+
     void output(const int64_t timestamp) 
     {
         output_file_ << "\n\nTotal Executing Time : " << timestamp << "\n"; 

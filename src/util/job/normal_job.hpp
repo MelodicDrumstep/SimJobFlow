@@ -28,6 +28,9 @@ struct NormalJob
     NormalJob & operator=(const NormalJob & other) = default;
     NormalJob & operator=(NormalJob && other) = default;
 
+    bool operator==(const NormalJob & other) const = default;
+    bool operator!=(const NormalJob & other) const = default;  
+
     bool operator<(const NormalJob & other) const
     {
         return (timestamp_ < other.timestamp_) || (timestamp_ == other.timestamp_ && workload_ > other.workload_);

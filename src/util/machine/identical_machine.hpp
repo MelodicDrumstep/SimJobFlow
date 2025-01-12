@@ -22,6 +22,9 @@ struct IdenticalMachine
 
     IdenticalMachine(int64_t machineId) : machineId_(machineId) {} 
 
+    bool operator==(const IdenticalMachine& other) const = default;
+    bool operator!=(const IdenticalMachine& other) const = default;
+
     bool isFree() const
     {
         assert(((jobId_ == Invalid_Job_Id) && (remaining_time_ == Invalid_Remaining_Time)) || 

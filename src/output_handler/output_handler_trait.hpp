@@ -20,4 +20,14 @@ concept OutputHandler = requires(OutputHandlerT output_handler,
     { output_handler.output(machines, jobs, timestamp, schedule_steps) } -> std::same_as<void>;
     { output_handler.output(timestamp) } -> std::same_as<void>;
 };
+
+template <typename OutputHandlerT, Machine_Model machine_model>
+concept OPTOutputHandler = OutputHandler<OutputHandlerT, machine_model> &&
+requires(OutputHandlerT output_handler, 
+        std::vector<typename MachineModelTraits<machine_model>::MachineT> machines,
+        std::vector<typename MachineModelTraits<machine_model>::JobT> jobs,
+        std::vector<ScheduleStep> schedule_steps)
+{
+    { output_handler.output(machines, jobs, schedule_steps) } -> std::same_as<void>;
+};
 }

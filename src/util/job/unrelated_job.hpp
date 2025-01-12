@@ -30,6 +30,9 @@ struct UnrelatedJob
     UnrelatedJob & operator=(const UnrelatedJob & other) = default;
     UnrelatedJob & operator=(UnrelatedJob && other) = default;
 
+    bool operator==(const UnrelatedJob & other) const = default;
+    bool operator!=(const UnrelatedJob & other) const = default;    
+
     bool operator<(const UnrelatedJob & other) const
     {
         return (timestamp_ < other.timestamp_);

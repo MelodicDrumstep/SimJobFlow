@@ -21,6 +21,9 @@ struct UnrelatedMachine
 
     UnrelatedMachine(int32_t machineId) : machineId_(machineId) {}
 
+    bool operator==(const UnrelatedMachine& other) const = default;
+    bool operator!=(const UnrelatedMachine& other) const = default;
+
     bool isFree() const
     {
         assert(((jobId_ == Invalid_Job_Id) && (remaining_time_ == Invalid_Remaining_Time)) || 
