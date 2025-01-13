@@ -16,10 +16,10 @@ using namespace SJF;
 int main()
 {
     NanoLog::setLogFile("./IdenticalListBasicIntegration1.log");
-    NanoLog::setLogLevel(NOTICE);
+    NanoLog::setLogLevel(DEBUG);
 
     std::string json_config_path = "../../assets/json/config/normal_config1.json";
-    std::string json_job_path = "../../assets/json/job/normal_job4.json";
+    std::string json_job_path = "../../assets/json/job/normal_job1.json";
     std::string output_path = "../../assets/output/OPT1.log";
     json config = parseJsonFile(json_config_path);
 

@@ -11,7 +11,7 @@ public:
     PermutationGenerator(int n, int k) : N_(n), K_(k) {}
 
     // Generates all unique permutations of the first K elements
-    std::vector<std::vector<int>> generatePermutations() {
+    const std::vector<std::vector<int>> generatePermutations() {
         if(N_ == 0 || K_ == 0 || K_ > N_) {
             return {};
         }
@@ -23,7 +23,7 @@ public:
     }
 
     // Returns the generated permutations
-    std::vector<std::vector<int>> getPermutations() const {
+    const std::vector<std::vector<int>> getPermutations() const {
         return permutations_;
     }
 

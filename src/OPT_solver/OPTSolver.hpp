@@ -88,6 +88,8 @@ public:
             {
                 best_total_timespent_ = timestamp;
                 best_schedule_steps_ = current_schedule_steps_;
+                NANO_LOG(DEBUG, "[OPTSolver::backtrace] Update best_total_timespent_ to %ld, best_schedule_steps_ is %s",
+                         best_total_timespent_, toString(best_schedule_steps_).c_str());
             }
             return;
         }
@@ -120,69 +122,60 @@ public:
         NANO_LOG(DEBUG, "[OPTSolver::backtrace] num_accumulated_jobs is %ld, num_free_machines is %ld, max_num_job_scheduled is %ld",
             num_accumulated_jobs, num_free_machines, max_num_job_scheduled);
 
-        // DEBUGING
         auto machines_backup = machines_;
         auto accumulated_jobs_backup = accumulated_jobs_;
-        // DEBUGING
 
         for(int num_job_scheduled = 0; num_job_scheduled <= max_num_job_scheduled; num_job_scheduled++)
         {
+            // DEBUGING
+            NANO_LOG(DEBUG, "[OPTSolver::backtrace] num_job_scheduled is %d",
+                num_job_scheduled);
+            // DEBUGING
             auto job_schedule_combination = PermutationGenerator(num_accumulated_jobs, num_job_scheduled).generatePermutations();
             auto machine_schedule_combination = PermutationGenerator(num_free_machines, num_job_scheduled).generatePermutations();
-
+            
             // enumerate the number of jobs to be schedule this turn
             for(auto & job_scheduled_indexes : job_schedule_combination)
             {
                 for(auto & machine_scheduled_indexes : machine_schedule_combination)
-                {            
+                {  
                     // schedule it!
                     // DEBUGING
                     NANO_LOG(DEBUG, "[OPTSolver::backtrace] job_scheduled_indexes: %s, machine_scheduled_indexes: %s", 
                         toString(job_scheduled_indexes).c_str(), toString(machine_scheduled_indexes).c_str());
-                    // DEBUGING 
+                    // DEBUGING
 
                     for(int i = 0; i < num_job_scheduled; i++)
                     {
-                        machines_backup_ = machines_;
-                        accumulated_jobs_backup_ = accumulated_jobs_;
-
-                        auto & machine = machines_[free_machine_indexes[machine_scheduled_indexes[i]]];
+                        NANO_LOG(DEBUG, "[OPTSolver::backtrace] i = %d, accumulated_jobs_.size() is %ld, job_scheduled_indexes[i] is %d",
+                            i, accumulated_jobs_.size(), job_scheduled_indexes[i]);
+                        auto machine = machines_[free_machine_indexes[machine_scheduled_indexes[i]]]; // For debuging
                         auto job = accumulated_jobs_[job_scheduled_indexes[i]];
                         NANO_LOG(DEBUG, "[OPTSolver::backtrace] Inside the inner loop, i is %d, job: %s, machine: %s",
-                            i, job.toString().c_str(), machine.toString().c_str());
-                        machine.execute(job.id_, job.workload_);
+                            i, job.toString().c_str(), machines_[free_machine_indexes[machine_scheduled_indexes[i]]].toString().c_str());
+                        machines_[free_machine_indexes[machine_scheduled_indexes[i]]].execute(job.id_, job.workload_);
 
-                        NANO_LOG(DEBUG, "[OPTSolver::backtrace] Before cleaning up, accumulated_jobs_: %s", 
-                            toString(accumulated_jobs_).c_str());
                         current_schedule_steps_.emplace_back(timestamp, job.id_, machine.machineId_);
+                        NANO_LOG(DEBUG, "[OPTSolver::backtrace] accumulated_jobs_.size() is %ld, job_scheduled_indexes[%d] is %d",
+                            accumulated_jobs_.size(), i, job_scheduled_indexes[i]);
                         accumulated_jobs_.erase(accumulated_jobs_.begin() + job_scheduled_indexes[i]);
-                        free_machine_indexes.erase(free_machine_indexes.begin() + machine_scheduled_indexes[i]);
-                        NANO_LOG(DEBUG, "[OPTSolver::backtrace] After cleaning up, accumulated_jobs_: %s", 
-                            toString(accumulated_jobs_).c_str());
                         NANO_LOG(DEBUG, "[OPTSolver::backtrace] job \"%s\" scheduled on machine \"%s\"", job.toString().c_str(), machine.toString().c_str());
                         
                         backtrace(timestamp + 1, jobs_array_index);
                         
-                        free_machine_indexes.insert(free_machine_indexes.begin() + machine_scheduled_indexes[i], machine.machineId_);
-                        accumulated_jobs_.insert(accumulated_jobs_.begin() + job_scheduled_indexes[i], job);
                         current_schedule_steps_.pop_back();
-                        machine.setFree();
                         NANO_LOG(DEBUG, "[OPTSolver::backtrace] timestamp = %ld,  Finish backtrace(%ld, %ld), job \"%s\" unscheduled from machine \"%s\"", 
                             timestamp, timestamp + 1, jobs_array_index, job.toString().c_str(), machine.toString().c_str());
 
-                        // // DEBUGING, check if machines and accumulated_jobs are both unchanged
-                        // if((machines_ != machines_backup) || (accumulated_jobs_ != accumulated_jobs_backup))
-                        // {
-                        //     NANO_LOG(ERROR, "[OPTSolver::backtrace] machines_ or accumulated_jobs_ changed during backtrace");
-                        //     NANO_LOG(DEBUG, "[OPTSolver::backtrace] machines_ = %s", toString(machines_).c_str());
-                        //     NANO_LOG(DEBUG, "[OPTSolver::backtrace] machines_backup = %s", toString(machines_backup).c_str());
-                        //     NANO_LOG(DEBUG, "[OPTSolver::backtrace] accumulated_jobs_ = %s", toString(accumulated_jobs_).c_str());
-                        //     NANO_LOG(DEBUG, "[OPTSolver::backtrace] accumulated_jobs_backup = %s", toString(accumulated_jobs_backup).c_str());
-                        //     exit(1);
-                        // }
-
                         machines_ = machines_backup;
                         accumulated_jobs_ = accumulated_jobs_backup;
+                        NANO_LOG(DEBUG, "[OPTSolver::backtrace] Finish one loop, timestamp = %ld,  accumulated_jobs_ = %s", 
+                            timestamp, toString(accumulated_jobs_).c_str());
+                        if(accumulated_jobs_.size() != num_accumulated_jobs)
+                        {
+                            NANO_LOG(ERROR, "[OPTSolver::backtrace] accumulated_jobs_.size() != num_accumulated_jobs, accumulated_jobs_ = %s", 
+                                toString(accumulated_jobs_).c_str());
+                        }
                         // DEBUGING
                     }
                 }
@@ -207,8 +200,6 @@ private:
     std::vector<JobT> jobs_;            // all jobs. Store all the jobs here for indexing by jobId 
     std::vector<JobT> accumulated_jobs_;
     size_t last_accumulated_job_index_ = -1;
-    std::vector<MachineT> machines_backup_;
-    std::vector<JobT> accumulated_jobs_backup_;
     int64_t num_of_machines_;
     std::vector<ScheduleStep> current_schedule_steps_;
     std::vector<ScheduleStep> best_schedule_steps_;

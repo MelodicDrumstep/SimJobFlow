@@ -61,8 +61,11 @@ public:
                 const std::vector<JobT> & jobs,
                 const std::vector<ScheduleStep> & schedule_steps)
     {
-        for(auto & step : schedule_steps)
+        for(int i = 0; i < schedule_steps.size(); i++)
         {
+            auto & step = schedule_steps[i];
+            output_file_ << "Step [" << i << "]" << "\n";
+            output_file_ << "Timestamp : " << step.timestamp_ << "\n";
             output_file_ << "Job : " << jobs[step.jobId_].toString() << "\n";
             output_file_ << "Machine : " << machines[step.machineId_].toString() << "\n";
         }
