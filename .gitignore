@@ -12,3 +12,4 @@ third_party/
 
 # ignore NanoLog files
 **/decompressor
+**/compressedLog

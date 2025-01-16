@@ -19,11 +19,20 @@ namespace SJF
 
 using json = nlohmann::json;
 
+/**
+ * @brief This class computes the OPT value of the given schedule jobs setting.
+ * It just use brute-force enumeration to find the optimal solution.
+ * 
+ * @tparam machine_model @see util/model/model.hpp
+ * @tparam InputHandlerT The input handler, must satisfy the 'OPTInputHandler' requirements
+ * @tparam OutputHandlerT The output handler, must satisfy the 'OPTOutputHandler' requirements
+ */
 template <Machine_Model machine_model, OPTInputHandler<machine_model> InputHandlerT, OPTOutputHandler<machine_model> OutputHandlerT>
 class OPTSolver 
 {
 /**
- * MachineModelTraits, which located at "src/machine_model/model_trait.hpp, contains the job type and machine type for this machine_model"
+ * MachineModelTraits, which located at "src/machine_model/model_trait.hpp, 
+ * contains the job type and machine type for this machine_model"
  */
 using JobT = typename MachineModelTraits<machine_model>::JobT;
 using MachineT = typename MachineModelTraits<machine_model>::MachineT;
@@ -61,8 +70,6 @@ public:
         NANO_LOG(DEBUG, " ");
         NANO_LOG(DEBUG, "[OPTSolver::backtrace] timestamp = %ld, jobs_array_index = %ld, backtrace_times_ = %ld", 
             timestamp, jobs_array_index, backtrace_times_);
-        NANO_LOG(DEBUG, "Before emplacing back jobs, accumulated_jobs_ is %s", toString(accumulated_jobs_).c_str());
-        NANO_LOG(DEBUG, "Before emplacing back jobs, machines_ is %s", toString(machines_).c_str());
         // DEBUGING
 
         // No need to backtrace any further
@@ -73,6 +80,7 @@ public:
             return;
         }
         updateMachineState();
+
         // Backtrace is done
         if(jobs_array_index == jobs_.size() && accumulated_jobs_.empty())
         {
@@ -94,19 +102,15 @@ public:
             return;
         }
 
-        // TODO: emplace back the new jobs to the accumulated jobs array
+        // emplace back the new jobs to the accumulated jobs array
         while(jobs_array_index < jobs_.size() && jobs_[jobs_array_index].timestamp_ <= timestamp)
         {
             NANO_LOG(DEBUG, "[OPTSolver::backtrace] inside the jobs emplacing back loop. jobs_array_index is %ld", jobs_array_index);
             accumulated_jobs_.push_back(jobs_[jobs_array_index]);
             jobs_array_index++;
         }
-
-        // DEBUGING
-        NANO_LOG(DEBUG, "[OPTSolver::backtrace] After emplacing back jobs, accumulated_jobs_ is %s", 
-            toString(accumulated_jobs_).c_str());
-        // DEBUING
         
+        // fill in the free machine list, used for enumeration
         std::vector<int> free_machine_indexes;
         for(int i = 0; i < machines_.size(); i++)
         {
@@ -125,6 +129,7 @@ public:
         auto machines_backup = machines_;
         auto accumulated_jobs_backup = accumulated_jobs_;
 
+        // Firstly enumerate the number of jobs to be scheduled in this turn
         for(int num_job_scheduled = 0; num_job_scheduled <= max_num_job_scheduled; num_job_scheduled++)
         {
             // DEBUGING
@@ -134,61 +139,45 @@ public:
             auto job_schedule_combination = PermutationGenerator(num_accumulated_jobs, num_job_scheduled).generatePermutations();
             auto machine_schedule_combination = PermutationGenerator(num_free_machines, num_job_scheduled).generatePermutations();
             
-            // enumerate the number of jobs to be schedule this turn
+            // Then enumerate the combination of jobs to be scheduled in this turn
             for(auto & job_scheduled_indexes : job_schedule_combination)
             {
+                // And enumerate the combination of machines to be scheduled in this turn
                 for(auto & machine_scheduled_indexes : machine_schedule_combination)
                 {  
                     // schedule it!
-                    // DEBUGING
                     NANO_LOG(DEBUG, "[OPTSolver::backtrace] job_scheduled_indexes: %s, machine_scheduled_indexes: %s", 
                         toString(job_scheduled_indexes).c_str(), toString(machine_scheduled_indexes).c_str());
-                    // DEBUGING
 
                     for(int i = 0; i < num_job_scheduled; i++)
                     {
-                        NANO_LOG(DEBUG, "[OPTSolver::backtrace] i = %d, accumulated_jobs_.size() is %ld, job_scheduled_indexes[i] is %d",
-                            i, accumulated_jobs_.size(), job_scheduled_indexes[i]);
-                        auto machine = machines_[free_machine_indexes[machine_scheduled_indexes[i]]]; // For debuging
+                        auto & machine = machines_[free_machine_indexes[machine_scheduled_indexes[i]]];
                         auto job = accumulated_jobs_[job_scheduled_indexes[i]];
-                        NANO_LOG(DEBUG, "[OPTSolver::backtrace] Inside the inner loop, i is %d, job: %s, machine: %s",
-                            i, job.toString().c_str(), machines_[free_machine_indexes[machine_scheduled_indexes[i]]].toString().c_str());
-                        machines_[free_machine_indexes[machine_scheduled_indexes[i]]].execute(job.id_, job.workload_);
-
-                        current_schedule_steps_.emplace_back(timestamp, job.id_, machine.machineId_);
-                        NANO_LOG(DEBUG, "[OPTSolver::backtrace] accumulated_jobs_.size() is %ld, job_scheduled_indexes[%d] is %d",
-                            accumulated_jobs_.size(), i, job_scheduled_indexes[i]);
-                        accumulated_jobs_.erase(accumulated_jobs_.begin() + job_scheduled_indexes[i]);
-                        NANO_LOG(DEBUG, "[OPTSolver::backtrace] job \"%s\" scheduled on machine \"%s\"", job.toString().c_str(), machine.toString().c_str());
-                        
+                        machine.execute(job.id_, job.workload_);
+                        // execute the job on the machine
+                        current_schedule_steps_.emplace_back(timestamp, job.id_, machine.machineId_); 
+                        // push the job to the schedule step list
+                        accumulated_jobs_.erase(accumulated_jobs_.begin() + job_scheduled_indexes[i]); 
+                        // erase the job from the accumulated_jobs_ list
                         backtrace(timestamp + 1, jobs_array_index);
                         
-                        current_schedule_steps_.pop_back();
-                        NANO_LOG(DEBUG, "[OPTSolver::backtrace] timestamp = %ld,  Finish backtrace(%ld, %ld), job \"%s\" unscheduled from machine \"%s\"", 
-                            timestamp, timestamp + 1, jobs_array_index, job.toString().c_str(), machine.toString().c_str());
-
+                        current_schedule_steps_.pop_back(); // pop the last step
+                        // restore the state of machines_ and accumulated_jobs_. 
+                        // This can also be done by passing them as a parameter to the function
+                        // I do not consider too much about it here, maybe potentially it can be optimized
                         machines_ = machines_backup;
-                        accumulated_jobs_ = accumulated_jobs_backup;
-                        NANO_LOG(DEBUG, "[OPTSolver::backtrace] Finish one loop, timestamp = %ld,  accumulated_jobs_ = %s", 
-                            timestamp, toString(accumulated_jobs_).c_str());
+                        accumulated_jobs_ = accumulated_jobs_backup; 
                         if(accumulated_jobs_.size() != num_accumulated_jobs)
                         {
                             NANO_LOG(ERROR, "[OPTSolver::backtrace] accumulated_jobs_.size() != num_accumulated_jobs, accumulated_jobs_ = %s", 
                                 toString(accumulated_jobs_).c_str());
                         }
-                        // DEBUGING
                     }
                 }
             }
         }
 
-        backtrace(timestamp + 1, jobs_array_index); // schedule nothing in this turn
-
-        // // DEBUGING
-        // NANO_LOG(DEBUG, "[OPTSolver::backtrace] After backtrace: timestamp = %ld", timestamp);
-        // NANO_LOG(DEBUG, "[OPTSolver::backtrace] After backtrace: accumulated_jobs_ is %s", toString(accumulated_jobs_).c_str());
-        // NANO_LOG(DEBUG, "[OPTSolver::backtrace] After backtrace: machines_ is %s", toString(machines_).c_str());
-        // NANO_LOG(DEBUG, "[OPTSolver::backtrace] After backtrace: current_schedule_steps_ is %s", toString(current_schedule_steps_).c_str());
+        backtrace(timestamp + 1, jobs_array_index); // The last case : schedule nothing in this turn
         NANO_LOG(DEBUG, "[OPTSolver::backtrace] End backtrace(%ld, %ld)", timestamp, jobs_array_index);
     }
 
@@ -196,15 +185,14 @@ private:
     std::unique_ptr<InputHandlerT> input_handler_;
     std::unique_ptr<OutputHandlerT> output_handler_;
 
-    std::vector<MachineT> machines_;    // all machines
-    std::vector<JobT> jobs_;            // all jobs. Store all the jobs here for indexing by jobId 
-    std::vector<JobT> accumulated_jobs_;
-    size_t last_accumulated_job_index_ = -1;
-    int64_t num_of_machines_;
-    std::vector<ScheduleStep> current_schedule_steps_;
-    std::vector<ScheduleStep> best_schedule_steps_;
+    std::vector<MachineT> machines_;     // all machines
+    std::vector<JobT> jobs_;             // all jobs. Store all the jobs here for indexing by jobId 
+    std::vector<JobT> accumulated_jobs_; 
+    int64_t num_of_machines_; 
+    std::vector<ScheduleStep> current_schedule_steps_; 
+    std::vector<ScheduleStep> best_schedule_steps_; 
     int64_t best_total_timespent_ = std::numeric_limits<int64_t>::max();
-    int64_t backtrace_times_ = 0;
+    int64_t backtrace_times_ = 0; // the number of times the backtrace function is called, used for logging
 
     /**
      * @brief Initialize the machine array.
@@ -237,6 +225,9 @@ private:
         }
     }
 
+    /**
+     * @brief Update the state of machines for 1 time step
+     */
     void updateMachineState()
     {
         if constexpr (machine_model == Machine_Model::Identical)
