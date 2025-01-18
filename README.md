@@ -117,7 +117,3 @@ Due to the large workload, I did not implement all the algorithms discussed in c
 + OPT's runtime is too slow! Parallel optimization could be considered to enable testing more cases.
 
 + Use real-world data, i.e., scheduling traces, as input for experiments. For example, we can use Ali-trace data.
-
-## Online Algorithm Documentation
-
-For lecture notes related to online scheduling algorithms, please refer to [docs/online_scheduling_notes.pdf](docs/online_scheduling_notes.pdf).
