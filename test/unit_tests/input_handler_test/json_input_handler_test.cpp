@@ -8,13 +8,14 @@
 using namespace SJF;
 
 using json = nlohmann::json;
-json config;
 
 TEST(JsonInputHandlerTest, ConstructorAndGetJobs1) 
 {
     NanoLog::setLogFile("./ConstructorAndGetJobs1.log");
     NanoLog::setLogLevel(DEBUG);
-    JsonInputHandler<Machine_Model::Identical> handler(config, "../../../../assets/json/job/normal_job1.json");
+    std::string config_path = PROJECT_ROOT_DIR "/assets/config/id_config0.json";
+    json config = parseJsonFile(config_path);
+    JsonInputHandler<Machine_Model::Identical> handler(config["Job_Config"]);
 
     // Test assert method
     EXPECT_TRUE(handler.checkValidity(2));
@@ -39,7 +40,9 @@ TEST(JsonInputHandlerTest, ConstructorAndGetJobs2)
 {
     NanoLog::setLogFile("./ConstructorAndGetJobs2.log");
     NanoLog::setLogLevel(DEBUG);
-    JsonInputHandler<Machine_Model::Related> handler(config, "../../../../assets/json/job/normal_job2.json");
+    std::string config_path = PROJECT_ROOT_DIR "/assets/config/id_config1.json";
+    json config = parseJsonFile(config_path);
+    JsonInputHandler<Machine_Model::Related> handler(config["Job_Config"]);
 
     NANO_LOG(DEBUG, "[JsonInputHandlerTest::ConstructorAndGetJobs2], printing the job array");
     auto job_array = handler.getJobArray();
@@ -81,7 +84,9 @@ TEST(JsonInputHandlerTest, UnrelatedConstructorAndGetJobs1)
 {
     NanoLog::setLogFile("./UnrelatedConstructorAndGetJobs1.log");
     NanoLog::setLogLevel(DEBUG);
-    JsonInputHandler<Machine_Model::Unrelated> handler(config, "../../../../assets/json/job/unrelated_job1.json");
+    std::string config_path = PROJECT_ROOT_DIR "/assets/config/unrelated_config0.json";
+    json config = parseJsonFile(config_path);
+    JsonInputHandler<Machine_Model::Unrelated> handler(config["Job_Config"]);
 
     NANO_LOG(DEBUG, "[JsonInputHandlerTest::UnrelatedConstructorAndGetJobs1], printing the job array");
     auto job_array = handler.getJobArray();

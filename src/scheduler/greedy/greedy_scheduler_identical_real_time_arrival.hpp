@@ -24,7 +24,7 @@ class GreedySchedulerIdenticalRealTimeArrival
 using JobHeap = std::priority_queue<NormalJob, std::vector<NormalJob>, NormalJobWorkloadCmp>;
 
 public:
-    GreedySchedulerIdenticalRealTimeArrival(const json & config)  {}
+    GreedySchedulerIdenticalRealTimeArrival()  {}
 
     /**
      * @brief Initialize the machine_free_list
@@ -75,7 +75,7 @@ public:
             // when there's free machine and remaining jobs, we can schedule the job at the top of the heap onto any machine
             const NormalJob & current_job = accumulated_jobs_.top();
             int64_t machine_id = machine_free_list_.back();
-            machines[machine_id].execute(current_job.id_, current_job.workload_);
+            machines[machine_id].execute(current_job);
             schedule_steps.emplace_back(timestamp, current_job.id_, machine_id);
             NANO_LOG(DEBUG, "current_job_id is %ld, and machine_id is %ld", current_job.id_, machine_id);
             NANO_LOG(DEBUG, "current job : %s", current_job.toString().c_str());

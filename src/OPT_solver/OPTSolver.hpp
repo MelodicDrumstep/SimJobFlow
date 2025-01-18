@@ -53,14 +53,16 @@ public:
 
     /**
      * @brief Start the scheduling rountine
+     * @return the OPT result
      */
-    void start()
+    int64_t start()
     {
         backtrace(0, 0);
         NANO_LOG(NOTICE, "[OPTSolver::start] OPTSolver finished, OPT is %ld, schedule_step is %s", 
             best_total_timespent_, toString(best_schedule_steps_).c_str());
         output_handler_ -> output(machines_, jobs_, best_schedule_steps_);
         output_handler_ -> output(best_total_timespent_);
+        return best_total_timespent_;
     }
 
     void backtrace(int64_t timestamp, size_t jobs_array_index)
@@ -152,10 +154,11 @@ public:
                     for(int i = 0; i < num_job_scheduled; i++)
                     {
                         auto & machine = machines_[free_machine_indexes[machine_scheduled_indexes[i]]];
+                        int64_t machineId = machine.machineId_;
                         auto job = accumulated_jobs_[job_scheduled_indexes[i]];
-                        machine.execute(job.id_, job.workload_);
+                        machine.execute(job);
                         // execute the job on the machine
-                        current_schedule_steps_.emplace_back(timestamp, job.id_, machine.machineId_); 
+                        current_schedule_steps_.emplace_back(timestamp, job.id_, machineId); 
                         // push the job to the schedule step list
                         accumulated_jobs_.erase(accumulated_jobs_.begin() + job_scheduled_indexes[i]); 
                         // erase the job from the accumulated_jobs_ list
@@ -169,8 +172,7 @@ public:
                         accumulated_jobs_ = accumulated_jobs_backup; 
                         if(accumulated_jobs_.size() != num_accumulated_jobs)
                         {
-                            NANO_LOG(ERROR, "[OPTSolver::backtrace] accumulated_jobs_.size() != num_accumulated_jobs, accumulated_jobs_ = %s", 
-                                toString(accumulated_jobs_).c_str());
+                            NANO_LOG(ERROR, "[OPTSolver::backtrace] accumulated_jobs_.size() != num_accumulated_jobs");
                         }
                     }
                 }
@@ -230,26 +232,15 @@ private:
      */
     void updateMachineState()
     {
-        if constexpr (machine_model == Machine_Model::Identical)
+        for(auto & machine : machines_)
         {
-            for(auto & machine : machines_)
+            if(!machine.isFree())
             {
-                if(!machine.isFree())
+                if(--machine.remaining_time_ == 0)
                 {
-                    if(--machine.remaining_time_ == 0)
-                    {
-                        machine.setFree();
-                    }
+                    machine.setFree();
                 }
             }
-        }
-        else if(machine_model == Machine_Model::Related)
-        {
-            // TODO: 
-        }
-        else
-        {
-            // TODO: 
         }
     }
 };

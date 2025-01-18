@@ -2,7 +2,8 @@
 file(GLOB_RECURSE TEST_SOURCES "*.cpp")
 
 # Add include directory for NanoLog
-include_directories(${CMAKE_SOURCE_DIR}/third_party/NanoLog/runtime)
+include_directories(${CMAKE_SOURCE_DIR}/third_party/NanoLog/runtime
+                    ${CMAKE_BINARY_DIR})
 
 foreach(TEST_SOURCE ${TEST_SOURCES})
     get_filename_component(TEST_NAME ${TEST_SOURCE} NAME_WE)

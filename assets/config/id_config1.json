@@ -1,0 +1,38 @@
+
+{
+    "Machine_Model" : "Identical",
+    "Release_Model" : "List",
+    "Machine_Config" : 
+    {
+        "Num_of_Machines" : 3
+    },
+    "Job_Config" : 
+    {
+        "Type" : "Normal",
+        "Num_of_Machines" : 3,
+        "Jobs" : 
+        [
+            {
+                "timestamp" : 2,
+                "workload" : 5
+            },
+            {
+                "timestamp" : 2,
+                "workload" : 3
+            },
+            {
+                "timestamp" : 3,
+                "workload" : 3
+            },
+            {
+                "timestamp" : 0,
+                "workload" : 3
+            },
+            {
+                "timestamp" : 1,
+                "workload" : 2
+            }
+        ]
+    },
+    "Output_Path" : "/dssg/home/acct-hpc/asc/wltu/SimJobFlow/assets/output/id1.out"
+}

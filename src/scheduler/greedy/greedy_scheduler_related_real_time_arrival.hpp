@@ -24,7 +24,7 @@ class GreedySchedulerRelatedRealTimeArrival
 using JobHeap = std::priority_queue<NormalJob, std::vector<NormalJob>, NormalJobWorkloadCmp>;
 
 public:
-    GreedySchedulerRelatedRealTimeArrival(const json & config)  {}
+    GreedySchedulerRelatedRealTimeArrival()  {}
 
     /**
      * @brief Initialize the machine_free_list
@@ -80,7 +80,7 @@ public:
             auto & machine_state_node = machine_free_heap_.top();
             int64_t machine_id = machine_state_node.machineId_;
             int64_t processing_speed = machine_state_node.processing_speed_;
-            machines[machine_id].execute(current_job.id_, (current_job.workload_ + processing_speed - 1) / processing_speed);
+            machines[machine_id].execute(current_job);
             schedule_steps.emplace_back(timestamp, current_job.id_, machine_id);
 
             NANO_LOG(DEBUG, "current_job_id is %ld, and machine_id is %ld", current_job.id_, machine_id);

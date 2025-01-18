@@ -37,10 +37,16 @@ struct UnrelatedMachine
         remaining_time_ = Invalid_Remaining_Time;
     }
 
-    void execute(int64_t job_id, int64_t remaining_time)
+    void execute(int64_t jobId, int64_t remaining_time)
     {
-        jobId_ = job_id;
+        jobId_ = jobId;
         remaining_time_ = remaining_time;
+    }
+
+    void execute(const UnrelatedJob & job)
+    {
+        jobId_ = job.id_;
+        remaining_time_ = job.processing_time_[machineId_];
     }
 
     std::string toString() const

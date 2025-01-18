@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(SimJobFlow)
+project(ALGSolver)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -25,11 +25,12 @@ include_directories(${CMAKE_SOURCE_DIR}/third_party/json/include)
 include_directories(${CMAKE_SOURCE_DIR}/src/input_handler)
 include_directories(${CMAKE_SOURCE_DIR}/src/scheduler)
 include_directories(${CMAKE_SOURCE_DIR}/src/OPT_solver)
+include_directories(${CMAKE_SOURCE_DIR}/src/competeness_ratio_calculator)
 include_directories(${CMAKE_SOURCE_DIR}/src/scheduler/greedy)
 include_directories(${CMAKE_SOURCE_DIR}/src/timer)
 include_directories(${CMAKE_SOURCE_DIR}/src/visualization)
 include_directories(${CMAKE_SOURCE_DIR}/src/output_handler)
-include_directories(${CMAKE_SOURCE_DIR}/src/simjobflow)
+include_directories(${CMAKE_SOURCE_DIR}/src/ALG_solver)
 include_directories(${CMAKE_SOURCE_DIR}/src/util)
 include_directories(${CMAKE_SOURCE_DIR}/src/util/machine)
 include_directories(${CMAKE_SOURCE_DIR}/src/util/job)
@@ -40,3 +41,10 @@ include_directories(${CMAKE_SOURCE_DIR}/src/util/exception)
 # Add subdirectories
 add_subdirectory(test)
 add_subdirectory(app)
+
+# encode the cmake root directory path into config.h
+set(PROJECT_ROOT_DIR ${CMAKE_SOURCE_DIR})
+configure_file(
+    ${CMAKE_SOURCE_DIR}/config.h.in
+    ${CMAKE_BINARY_DIR}/config.h
+)

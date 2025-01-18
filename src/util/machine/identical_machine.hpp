@@ -44,6 +44,12 @@ struct IdenticalMachine
         remaining_time_ = remaining_time;
     }
 
+    void execute(const NormalJob & job)
+    {
+        jobId_ = job.id_;
+        remaining_time_ = job.workload_;
+    }
+
     std::string toString() const
     { 
         std::string result = "machineId : " + std::to_string(machineId_) +

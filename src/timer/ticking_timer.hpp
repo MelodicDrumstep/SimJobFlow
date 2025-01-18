@@ -18,7 +18,7 @@ class TickingTimer
 using MachineT = typename MachineModelTraits<machine_model>::MachineT;
 
 public:
-    TickingTimer(const json & config) {}
+    TickingTimer() {}
 
     int64_t tick(const std::vector<MachineT> & machines) 
     { 

@@ -32,9 +32,8 @@ using JobT = typename MachineModelTraits<machine_model>::JobT;
     /**
      * @brief Parse the json file, do some checking, store all the jobs in a vector.
      */
-    JsonInputHandler(const json & config, std::string_view json_job_path)
+    JsonInputHandler(const json & job_metadata)
     {
-        json job_metadata = parseJsonFile(json_job_path);
         job_type_ = job_metadata["Type"];
         auto & jobs = job_metadata["Jobs"];
         num_of_machines_ = job_metadata["Num_of_Machines"];

@@ -28,11 +28,11 @@ public:
     /**
      * @brief Initialize the std::ofstream based on the output path
      * 
-     * @param config A json object, containing configuration information.
      * @param output_path The path of the output file.
      */
-    FileOutputHandler(const json & config, std::string_view output_path)
+    FileOutputHandler(const json & output_config)
     {
+        std::string_view output_path = output_config.get<std::string_view>();
         output_file_.open(output_path.data(), std::ios::out | std::ios::trunc);
         if(!output_file_.is_open())
         {

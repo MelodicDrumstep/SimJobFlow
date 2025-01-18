@@ -26,7 +26,7 @@ class GreedySchedulerRelatedListArrival
 {
 
 public:
-    GreedySchedulerRelatedListArrival(const json & config) {}
+    GreedySchedulerRelatedListArrival() {}
 
     /**
      * @brief Initialize the machine state extended array and the machine state temp array
@@ -82,7 +82,7 @@ public:
                 // if machine is free, then it's assured that there's no pending jobs on it
                 // because if so, updateMachineState will execute that pending job on this machine.
                 NANO_LOG(DEBUG, "machine is free, schedule onto it");
-                machine.execute(job.id_, expected_job_running_time);
+                machine.execute(job);
             }
             else
             {
@@ -145,9 +145,8 @@ public:
                     done_flag = false;
                     assert(machine_state.pending_jobs_.size() > 0);
                     auto & top_pending_job = machine_state.pending_jobs_.front();
-                    int64_t expected_job_running_time = (top_pending_job.workload_ + machine.processing_speed_ - 1) /machine.processing_speed_;
                     // We must consider the processing speed of the machine
-                    machine.execute(top_pending_job.id_, expected_job_running_time);
+                    machine.execute(top_pending_job);
                     machine_state.pending_jobs_.pop_front();
                 }
             }

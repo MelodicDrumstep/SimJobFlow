@@ -24,7 +24,7 @@ class GreedySchedulerIdenticalListArrival
 {
 
 public:
-    GreedySchedulerIdenticalListArrival(const json & config) {}
+    GreedySchedulerIdenticalListArrival() {}
 
     /**
      * @brief Initialize the machine state array and the machine state heap
@@ -85,7 +85,7 @@ public:
             if(machine.isFree())
             {
                 assert(machine_state.isFree());
-                machine.execute(job.id_, job.workload_);
+                machine.execute(job);
                 NANO_LOG(DEBUG, "machine is free, schedule onto it. jobId is %ld, workload is %ld", job.id_, job.workload_);
             }
             else
@@ -149,7 +149,7 @@ public:
                     done_flag = false;
                     assert(machine_state.pending_jobs_.size() > 0);
                     auto & top_pending_job = machine_state.pending_jobs_.front();
-                    machine.execute(top_pending_job.id_, top_pending_job.workload_);
+                    machine.execute(top_pending_job);
 
                     NANO_LOG(DEBUG, "schedule the pending job onto the machine.");
                     NANO_LOG(DEBUG, "job id : %ld and job workload : %ld", top_pending_job.id_, top_pending_job.workload_);

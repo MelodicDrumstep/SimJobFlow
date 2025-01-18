@@ -1,0 +1,25 @@
+{
+    "Machine_Model" : "Identical",
+    "Release_Model" : "List",
+    "Machine_Config" : 
+    {
+        "Num_of_Machines" : 2
+    },
+    "Job_Config" : 
+    {
+        "Type" : "Normal",
+        "Num_of_Machines" : 2,
+        "Jobs" : 
+        [
+            {
+                "timestamp" : 0,
+                "workload" : 2
+            },
+            {
+                "timestamp" : 1,
+                "workload" : 2
+            }
+        ]
+    },
+    "Output_Path" : "/dssg/home/acct-hpc/asc/wltu/SimJobFlow/assets/output/id0.out"
+}

@@ -1,4 +1,5 @@
 # ignore log 
+logs/
 **/*.log
 
 # ignore directory for building
@@ -13,3 +14,6 @@ third_party/
 # ignore NanoLog files
 **/decompressor
 **/compressedLog
+
+# ignore output
+assets/output/

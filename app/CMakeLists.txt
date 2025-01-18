@@ -1,7 +1,8 @@
 # Add each .cpp file as a separate executable
 file(GLOB_RECURSE APP_SOURCES "*.cpp")
 # Add include directory for NanoLog
-include_directories(${CMAKE_SOURCE_DIR}/third_party/NanoLog/runtime)
+include_directories(${CMAKE_SOURCE_DIR}/third_party/NanoLog/runtime
+                    ${CMAKE_BINARY_DIR})
 
 foreach(APP_SOURCE ${APP_SOURCES})
     get_filename_component(APP_NAME ${APP_SOURCE} NAME_WE)

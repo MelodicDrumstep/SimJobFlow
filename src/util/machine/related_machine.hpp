@@ -39,10 +39,10 @@ struct RelatedMachine
         remaining_time_ = Invalid_Remaining_Time;
     }
 
-    void execute(int64_t job_id, int64_t remaining_time)
+    void execute(const NormalJob & job)
     {
-        jobId_ = job_id;
-        remaining_time_ = remaining_time;
+        jobId_ = job.id_;
+        remaining_time_ = (job.workload_ + processing_speed_ - 1) / processing_speed_;
     }
 
     std::string toString() const

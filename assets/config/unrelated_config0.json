@@ -1,0 +1,41 @@
+{
+    "Machine_Model" : "Unrelated",
+    "Release_Model" : "List",
+    "Machine_Config" : 
+    {
+        "Num_of_Machines" : 2
+    },
+    "Job_Config" : 
+    {
+        "Type" : "Unrelated",
+        "Num_of_Machines" : 2,
+        "Jobs" : 
+        [
+            {
+                "timestamp" : 2,
+                "processing_time" : 
+                [
+                    1,
+                    2
+                ]
+            },
+            {
+                "timestamp" : 0,
+                "processing_time" : 
+                [
+                    3,
+                    2
+                ]
+            },
+            {
+                "timestamp" : 1,
+                "processing_time" : 
+                [
+                    5,
+                    4
+                ]
+            }
+        ]
+    },
+    "Output_Path" : "/dssg/home/acct-hpc/asc/wltu/SimJobFlow/assets/output/unrelated0.out"
+}

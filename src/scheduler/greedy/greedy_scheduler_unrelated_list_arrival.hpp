@@ -26,7 +26,7 @@ class GreedySchedulerUnrelatedListArrival
 {
 
 public:
-    GreedySchedulerUnrelatedListArrival(const json & config) {}
+    GreedySchedulerUnrelatedListArrival() {}
 
     /**
      * @brief Initialize the machine state extended array and the machine state temp array
@@ -82,7 +82,7 @@ public:
                 // if machine is free, then it's assured that there's no pending jobs on it
                 // because if so, updateMachineState will execute that pending job on this machine.
                 NANO_LOG(DEBUG, "machine is free, schedule onto it");
-                machine.execute(job.id_, expected_job_running_time);
+                machine.execute(job);
             }
             else
             {

@@ -26,7 +26,7 @@ class GreedySchedulerUnrelatedRealTimeArrival
 {
 
 public:
-    GreedySchedulerUnrelatedRealTimeArrival(const json & config)  {}
+    GreedySchedulerUnrelatedRealTimeArrival()  {}
 
     /**
      * @brief Initialize the machine_free_list
@@ -88,7 +88,7 @@ public:
             if(num_free_machine != 0)
             {
                 assert((target_machine_id) != -1 && (min_executing_time != std::numeric_limits<int64_t>::max()));
-                machines[target_machine_id].execute(current_job.id_, min_executing_time);
+                machines[target_machine_id].execute(current_job);
                 schedule_steps.emplace_back(timestamp, current_job.id_, target_machine_id);
 
                 NANO_LOG(DEBUG, "current_job_id is %ld, machine_id is %ld", current_job.id_, target_machine_id);

@@ -3,7 +3,7 @@
 #include <fstream>
 #include <nlohmann/json.hpp>
 
-#include "simjobflow.hpp"
+#include "ALGSolver.hpp"
 #include "OPTSolver.hpp"
 #include "ticking_timer.hpp"
 #include "json_input_handler.hpp"
@@ -13,21 +13,22 @@
 
 using namespace SJF;
 
-int main()
+int main(int argc, char* argv[])
 {
-    NanoLog::setLogFile("./IdenticalListBasicIntegration1.log");
+    if(argc != 2)
+    {
+        std::cerr << "Usage: " << argv[0] << " <config_file>" << std::endl;
+        return 1;
+    }
+    NanoLog::setLogFile(PROJECT_ROOT_DIR "/logs/sample.log");
     NanoLog::setLogLevel(NOTICE);
-
-    std::string json_config_path = "../../assets/json/config/normal_config2.json";
-    std::string json_job_path = "../../assets/json/job/normal_job2.json";
-    std::string output_path = "../../assets/output/OPT1.log";
-    json config = parseJsonFile(json_config_path);
-
+    json config = parseJsonFile(argv[1]);
+    
     OPTSolver<Machine_Model::Identical, 
                JsonInputHandler<Machine_Model::Identical>, 
-               FileOutputHandler<Machine_Model::Identical>> opt_solver(config, 
-                                       std::make_unique<JsonInputHandler<Machine_Model::Identical>>(config, json_job_path), 
-                                       std::make_unique<FileOutputHandler<Machine_Model::Identical>>(config, output_path));
+               FileOutputHandler<Machine_Model::Identical>> opt_solver(config["Machine_Config"], 
+                                       std::make_unique<JsonInputHandler<Machine_Model::Identical>>(config["Job_Config"]), 
+                                       std::make_unique<FileOutputHandler<Machine_Model::Identical>>(config["Output_Path"]));
                 
     opt_solver.start();
     return 0;
