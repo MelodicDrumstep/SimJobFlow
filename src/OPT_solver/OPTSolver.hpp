@@ -39,10 +39,10 @@ using MachineT = typename MachineModelTraits<machine_model>::MachineT;
 
 public:
     OPTSolver(const json & config,
-               std::unique_ptr<InputHandlerT> input_handler,
+               std::shared_ptr<InputHandlerT> input_handler,
                std::unique_ptr<OutputHandlerT> output_handler) :
         num_of_machines_(config["Num_of_Machines"]),
-        input_handler_(std::move(input_handler)),
+        input_handler_(input_handler),
         output_handler_(std::move(output_handler))
     {
         input_handler_ -> checkValidity(num_of_machines_); 
@@ -184,7 +184,7 @@ public:
     }
 
 private:
-    std::unique_ptr<InputHandlerT> input_handler_;
+    std::shared_ptr<InputHandlerT> input_handler_;
     std::unique_ptr<OutputHandlerT> output_handler_;
 
     std::vector<MachineT> machines_;     // all machines

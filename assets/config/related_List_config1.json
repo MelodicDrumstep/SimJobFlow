@@ -1,0 +1,49 @@
+{
+    "Test_Times" : 10,
+    "Machine_Model" : "Related",
+    "Release_Model" : "List",
+    "Machine_Config" : 
+    {
+        "Num_of_Machines" : 3,
+        "Processing_Speed":
+        [
+            1, 
+            2, 
+            5
+        ]
+    },
+    "Job_Config" : 
+    {
+        "Type" : "Normal",
+        "Num_of_Machines" : 3,
+        "Jobs" : 
+        [
+            {
+                "timestamp" : 2,
+                "workload" : 5
+            },
+            {
+                "timestamp" : 2,
+                "workload" : 3
+            },
+            {
+                "timestamp" : 3,
+                "workload" : 3
+            },
+            {
+                "timestamp" : 0,
+                "workload" : 3
+            },
+            {
+                "timestamp" : 1,
+                "workload" : 2
+            }
+        ],
+        "Num_of_Jobs_Lower_Bound" : 2,
+        "Num_of_Jobs_Upper_Bound" : 5,
+        "Possion_Lambda" : 1.5,
+        "Processing_Time_Lower_Bound" : 1,
+        "Processing_Time_Upper_Bound" : 10
+    },
+    "Output_Path" : "/dssg/home/acct-hpc/asc/wltu/SimJobFlow/assets/output/related1.json"
+}

@@ -8,9 +8,8 @@
 #include <fstream>
 #include <string_view>
 #include <type_traits>
+#include <random>
 #include <nlohmann/json.hpp>
-
-#include "json_parser.hpp"
 #include "basic_utils_in_one_header.hpp"
 
 namespace SJF
@@ -19,38 +18,53 @@ namespace SJF
 using json = nlohmann::json;
 
 /**
- * @brief The input handler that takes all the jobs from a json file.
+ * @brief The input handler that generate the input jobs by random.
+ * I use Possion distribution to generate the inter-arrival time.
+ * And I just use uniform distribution to generate the processing time.
  * 
  * @tparam machine_model    Identical / Related / Unrelated
  */
 template <Machine_Model machine_model>
-class JsonInputHandler
+class RandomInputHandler
 {
 public:
 using JobT = typename MachineModelTraits<machine_model>::JobT;
 
     /**
-     * @brief Parse the json file, do some checking, store all the jobs in a vector.
+     * @brief Generate the input jobs by random.
      */
-    JsonInputHandler(const json & job_metadata)
+    RandomInputHandler(const json & job_metadata)
     {
         job_type_ = job_metadata["Type"];
-        auto & jobs = job_metadata["Jobs"];
         num_of_machines_ = job_metadata["Num_of_Machines"];
+        int num_jobs_lower_bound = job_metadata.value("Num_of_Jobs_Lower_Bound", 1);
+        int num_jobs_upper_bound = job_metadata.value("Num_of_Jobs_Upper_Bound", 5);
+        double lambda = job_metadata.value("Possion_Lambda", 2.0);
+        int processing_time_lower_bound = job_metadata.value("Processing_Time_Lower_Bound", 1);
+        int processing_time_upper_bound = job_metadata.value("Processing_Time_Upper_Bound", 10);
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<> num_jobs_dist(num_jobs_lower_bound, num_jobs_upper_bound);
+        std::poisson_distribution<> poisson_dist(lambda);
+        std::uniform_int_distribution<> processing_time_dist(processing_time_lower_bound, processing_time_upper_bound);
+        int num_jobs = num_jobs_dist(gen);
+        job_array_.reserve(num_jobs);
+
         if constexpr (std::is_same_v<JobT, UnrelatedJob>)
         {
+            int num_machines = job_metadata["Num_of_Machines"];
             if(job_type_ != "Unrelated")
             {
                 throw InvalidJobType(job_type_);
             }
-            for(auto & job : jobs)
+            for(int i = 0; i < num_jobs; i++)
             {
-                std::vector<int64_t> processing_time = job["processing_time"];
-                if(processing_time.size() != num_of_machines_)
+                std::vector<int64_t> processing_time(num_machines);
+                for(int j = 0; j < num_machines; j++)
                 {
-                    throw InvalidUnrelatedJobProcessingTime(processing_time.size(), num_of_machines_);
+                    processing_time[j] = processing_time_dist(gen);
                 }
-                job_array_.emplace_back(job["timestamp"], std::move(processing_time));
+                job_array_.emplace_back(poisson_dist(gen), std::move(processing_time), i);
             }
         }
         else
@@ -59,9 +73,9 @@ using JobT = typename MachineModelTraits<machine_model>::JobT;
             {
                 throw InvalidJobType(job_type_);
             }
-            for(auto & job : jobs)
+            for(int i = 0; i < num_jobs; i++)
             {
-                job_array_.emplace_back(job["timestamp"], job["workload"]);
+                job_array_.emplace_back(poisson_dist(gen), processing_time_dist(gen), i);
             }
         }
 
@@ -72,7 +86,7 @@ using JobT = typename MachineModelTraits<machine_model>::JobT;
             job_array_[i].id_ = i;
         }
 
-        NANO_LOG(DEBUG, "[JsonInputHandler::Constructor] printing the job array : ");
+        NANO_LOG(DEBUG, "[RandomInputHandler::Constructor] printing the job array : ");
         for(auto & job : job_array_)
         {
             NANO_LOG(DEBUG, "%s", job.toString().c_str());
@@ -109,10 +123,10 @@ using JobT = typename MachineModelTraits<machine_model>::JobT;
             return jobs;
         }
 
-        NANO_LOG(DEBUG, "[JsonInputHandler::getJobs] printing the job array : ");
+        NANO_LOG(DEBUG, "[RandomInputHandler::getJobs] printing the job array : ");
         for(auto & job : job_array_)
         {
-            NANO_LOG(DEBUG, "[JsonInputHandler::getJobs] %s", job.toString().c_str());
+            NANO_LOG(DEBUG, "[RandomInputHandler::getJobs] %s", job.toString().c_str());
         }
 
         return jobs;

@@ -19,11 +19,11 @@ struct UnrelatedJob
         // And it's given in the job struct
     int64_t id_;                // jobId, sorted by timestamp
 
-    UnrelatedJob(int64_t timestamp, std::vector<int64_t> && processing_speeds)
-     : timestamp_(timestamp), processing_time_(std::move(processing_speeds)) {}
+    UnrelatedJob(int64_t timestamp, std::vector<int64_t> && processing_time)
+     : timestamp_(timestamp), processing_time_(std::move(processing_time)) {}
 
-    UnrelatedJob(int64_t timestamp, std::vector<int64_t> && processing_speeds, int64_t id)
-     : timestamp_(timestamp), processing_time_(std::move(processing_speeds)), id_(id) {}
+    UnrelatedJob(int64_t timestamp, std::vector<int64_t> && processing_time, int64_t id)
+     : timestamp_(timestamp), processing_time_(std::move(processing_time)), id_(id) {}
 
     UnrelatedJob(const UnrelatedJob & other) = default;
     UnrelatedJob(UnrelatedJob && other) = default;

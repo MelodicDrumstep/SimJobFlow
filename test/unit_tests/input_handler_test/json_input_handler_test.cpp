@@ -11,7 +11,7 @@ using json = nlohmann::json;
 
 TEST(JsonInputHandlerTest, ConstructorAndGetJobs1) 
 {
-    NanoLog::setLogFile("./ConstructorAndGetJobs1.log");
+    NanoLog::setLogFile(PROJECT_ROOT_DIR "/logs/ConstructorAndGetJobs1.log");
     NanoLog::setLogLevel(DEBUG);
     std::string config_path = PROJECT_ROOT_DIR "/assets/config/id_config0.json";
     json config = parseJsonFile(config_path);
@@ -38,7 +38,7 @@ TEST(JsonInputHandlerTest, ConstructorAndGetJobs1)
 
 TEST(JsonInputHandlerTest, ConstructorAndGetJobs2) 
 {
-    NanoLog::setLogFile("./ConstructorAndGetJobs2.log");
+    NanoLog::setLogFile(PROJECT_ROOT_DIR "/logs/ConstructorAndGetJobs2.log");
     NanoLog::setLogLevel(DEBUG);
     std::string config_path = PROJECT_ROOT_DIR "/assets/config/id_config1.json";
     json config = parseJsonFile(config_path);
@@ -82,7 +82,7 @@ TEST(JsonInputHandlerTest, ConstructorAndGetJobs2)
 
 TEST(JsonInputHandlerTest, UnrelatedConstructorAndGetJobs1) 
 {
-    NanoLog::setLogFile("./UnrelatedConstructorAndGetJobs1.log");
+    NanoLog::setLogFile(PROJECT_ROOT_DIR "/logs/UnrelatedConstructorAndGetJobs1.log");
     NanoLog::setLogLevel(DEBUG);
     std::string config_path = PROJECT_ROOT_DIR "/assets/config/unrelated_config0.json";
     json config = parseJsonFile(config_path);

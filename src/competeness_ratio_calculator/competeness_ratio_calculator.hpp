@@ -46,13 +46,14 @@ using OPTSolverT = OPTSolver<machine_model, InputHandlerT, OutputHandlerT>;
 
 public:
     CompetenessRatioCalculator(json & config) 
-        : alg_solver_(config["Machine_Config"], 
+        : input_handler_(std::make_shared<InputHandlerT>(config["Job_Config"])),
+        alg_solver_(config["Machine_Config"], 
             std::make_unique<SchedulerT>(), 
-            std::make_unique<InputHandlerT>(config["Job_Config"]), 
+            input_handler_, 
             std::make_unique<OutputHandlerT>(config["Output_Path"]), 
             std::make_unique<TimerT>()),
         opt_solver_(config["Machine_Config"], 
-            std::make_unique<InputHandlerT>(config["Job_Config"]), 
+            input_handler_, 
             std::make_unique<OutputHandlerT>(config["Output_Path"])) {}
 
     /**
@@ -60,12 +61,14 @@ public:
      */
     double calculate() {
         int64_t ALG = alg_solver_.start();
+        input_handler_ -> refresh();
         int64_t OPT = opt_solver_.start();
         NANO_LOG(NOTICE, "[CompetenessRatioCalculator::calculate] ALG: %ld, OPT: %ld", ALG, OPT);
         return ALG * 1.0 / OPT;
     }
 
 private:
+    std::shared_ptr<InputHandlerT> input_handler_;
     ALGSolverT alg_solver_;
     OPTSolverT opt_solver_;
 };

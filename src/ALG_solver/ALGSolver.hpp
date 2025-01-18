@@ -60,12 +60,12 @@ public:
      */
     ALGSolver(const json & config,
                std::unique_ptr<SchedulerT> scheduler,
-               std::unique_ptr<InputHandlerT> input_handler,
+               std::shared_ptr<InputHandlerT> input_handler,
                std::unique_ptr<OutputHandlerT> output_handler,
                std::unique_ptr<TimerT> timer) :
         num_of_machines_(config["Num_of_Machines"]),
         scheduler_(std::move(scheduler)),
-        input_handler_(std::move(input_handler)),
+        input_handler_(input_handler),
         output_handler_(std::move(output_handler)),
         timer_(std::move(timer))
     {
@@ -106,7 +106,7 @@ public:
 
 private:
     std::unique_ptr<SchedulerT> scheduler_; 
-    std::unique_ptr<InputHandlerT> input_handler_;
+    std::shared_ptr<InputHandlerT> input_handler_;
     std::unique_ptr<OutputHandlerT> output_handler_;
     std::unique_ptr<TimerT> timer_;
     std::vector<MachineT> machines_;    // all machines

@@ -23,6 +23,7 @@ template <typename InputHandlerT, Machine_Model machine_model>
 concept OPTInputHandler = InputHandler<InputHandlerT, machine_model> &&
 requires(InputHandlerT input_handler) 
 {
+    { input_handler.refresh() } -> std::same_as<void>;
     { input_handler.getJobArray() } -> std::same_as<const std::vector<typename MachineModelTraits<machine_model>::JobT>&>;
 };
 
